@@ -19,28 +19,42 @@
 <script>
 const BASE_URL = "https://leads-backend-2piw.onrender.com/api";
 
-async function loadPublicBlogs() {
-  const res = await fetch(`${BASE_URL}/blogs`);
-  const data = await res.json();
-  const blogs = data.blogs || [];
+async function loadBlogs() {
+  try {
+    const res = await fetch(`${BASE_URL}/blogs`);
+    const data = await res.json();
 
-  const container = document.getElementById("blogsContainer");
-  container.innerHTML = "";
+    // 🔴 safety + publish filter
+    const blogs = (data.blogs || []).filter(b => b.isPublished === true);
 
-  blogs.forEach(blog => {
-    container.innerHTML += `
-      <div class="col-md-4 mb-4">
-        <div class="blog-card">
-          <h4>${blog.title}</h4>
-          <p>${blog.content.substring(0,120)}...</p>
-          <a href="single-blog.html?id=${blog._id}">Read More →</a>
+    const container = document.getElementById("blogsContainer");
+
+    container.innerHTML = blogs.length
+      ? blogs.map(b => `
+        <div class="col-md-4 mb-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title">${b.title}</h5>
+              <p class="card-text">
+                ${(b.content || "").substring(0,150)}...
+              </p>
+              <a href="blog-detail.html?id=${b._id}" class="btn btn-primary btn-sm">
+                Read More
+              </a>
+            </div>
+          </div>
         </div>
-      </div>
-    `;
-  });
+      `).join("")
+      : "<p class='text-center'>No blogs found</p>";
+
+  } catch (err) {
+    console.error("Error loading blogs:", err);
+    document.getElementById("blogsContainer").innerHTML =
+      "<p class='text-danger text-center'>Failed to load blogs</p>";
+  }
 }
 
-loadPublicBlogs();
+loadBlogs();
 </script>
 
 </body>

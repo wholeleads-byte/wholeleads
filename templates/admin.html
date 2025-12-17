@@ -11,7 +11,10 @@
 <script>
 const BASE_URL = "https://leads-backend-2piw.onrender.com/api";
 const token = localStorage.getItem("token");
-if (!token) location.href = "adminlogin.html";
+
+if (!token) {
+  location.href = "adminlogin.html";
+}
 </script>
 </head>
 
@@ -27,6 +30,7 @@ if (!token) location.href = "adminlogin.html";
 
 <div class="main-content">
 
+<!-- DASHBOARD -->
 <div id="dashboardSection">
   <h2>Welcome Admin 👋</h2>
 
@@ -47,6 +51,7 @@ if (!token) location.href = "adminlogin.html";
   </div>
 </div>
 
+<!-- BLOGS -->
 <div id="blogsSection" style="display:none;">
   <h2>Blogs</h2>
 
@@ -69,26 +74,25 @@ if (!token) location.href = "adminlogin.html";
   <div id="blogList"></div>
 </div>
 
+<!-- LEADS -->
 <div id="leadsSection" style="display:none;">
-  <h2>Leads (Contact Form)</h2>
+  <h2>Leads</h2>
   <div id="leadList"></div>
 </div>
 
 </div>
 
 <script>
-
 const dashboardSection = document.getElementById("dashboardSection");
 const blogsSection = document.getElementById("blogsSection");
 const leadsSection = document.getElementById("leadsSection");
 
-const blogList = document.getElementById("blogList");
 const blogForm = document.getElementById("blogForm");
+const blogList = document.getElementById("blogList");
 const blogCount = document.getElementById("blogCount");
 
 const leadList = document.getElementById("leadList");
 const leadCount = document.getElementById("leadCount");
-
 
 function setActive(el) {
   document.querySelectorAll(".sidebar a").forEach(a => a.classList.remove("active"));
@@ -120,11 +124,15 @@ function showLeads(el) {
   loadLeads();
 }
 
+/* ---------------- BLOGS ---------------- */
 
 async function loadBlogs() {
   const res = await fetch(`${BASE_URL}/blogs`, {
-    headers: { Authorization: token }
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
   });
+
   const data = await res.json();
   const blogs = data.blogs || [];
 
@@ -135,7 +143,7 @@ async function loadBlogs() {
       <div class="card mb-2">
         <div class="card-body">
           <h5>${b.title}</h5>
-          <p>${b.content.substring(0,100)}...</p>
+          <p>${b.content.substring(0, 100)}...</p>
           <button class="btn btn-warning btn-sm" onclick='editBlog(${JSON.stringify(b)})'>Edit</button>
           <button class="btn btn-danger btn-sm" onclick="deleteBlog('${b._id}')">Delete</button>
         </div>
@@ -148,6 +156,7 @@ blogForm.addEventListener("submit", async e => {
   e.preventDefault();
 
   const id = blogId.value;
+
   const payload = {
     title: title.value.trim(),
     content: content.value.trim(),
@@ -158,15 +167,23 @@ blogForm.addEventListener("submit", async e => {
   const url = id ? `${BASE_URL}/blogs/${id}` : `${BASE_URL}/blogs`;
   const method = id ? "PUT" : "POST";
 
-  await fetch(url, {
+  const res = await fetch(url, {
     method,
     headers: {
       "Content-Type": "application/json",
-      Authorization: token
+      Authorization: `Bearer ${token}`
     },
     body: JSON.stringify(payload)
   });
 
+  const data = await res.json();
+
+  if (!res.ok) {
+    alert(data.message || "Blog save failed");
+    return;
+  }
+
+  alert("Blog saved successfully");
   resetBlog();
   loadBlogs();
 });
@@ -181,11 +198,15 @@ function editBlog(b) {
 }
 
 async function deleteBlog(id) {
-  if (!confirm("Delete blog?")) return;
+  if (!confirm("Delete this blog?")) return;
+
   await fetch(`${BASE_URL}/blogs/${id}`, {
     method: "DELETE",
-    headers: { Authorization: token }
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
   });
+
   loadBlogs();
 }
 
@@ -194,11 +215,15 @@ function resetBlog() {
   blogForm.reset();
 }
 
+/* ---------------- LEADS ---------------- */
 
 async function loadLeads() {
   const res = await fetch(`${BASE_URL}/leads`, {
-    headers: { Authorization: token }
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
   });
+
   const data = await res.json();
   const leads = data.leads || [];
 
@@ -220,11 +245,15 @@ async function loadLeads() {
 }
 
 async function deleteLead(id) {
-  if (!confirm("Delete lead?")) return;
+  if (!confirm("Delete this lead?")) return;
+
   await fetch(`${BASE_URL}/leads/${id}`, {
     method: "DELETE",
-    headers: { Authorization: token }
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
   });
+
   loadLeads();
 }
 

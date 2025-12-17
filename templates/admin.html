@@ -1,23 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WholeLeads Admin</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WholeLeads Admin</title>
 
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="../static/wholeadmin.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../static/wholeadmin.css">
 
-  <script>
-    const BASE_URL = "https://leads-backend-2piw.onrender.com/api";
-    const token = localStorage.getItem("token");
+<script>
+const BASE_URL = "https://leads-backend-2piw.onrender.com/api";
+const token = localStorage.getItem("token");
 
-    if (!token || token === "undefined") {
-      localStorage.clear();
-      location.href = "adminlogin.html";
-    }
-  </script>
+if (!token || token === "undefined") {
+  localStorage.clear();
+  location.href = "adminlogin.html";
+}
+</script>
 </head>
 
 <body>
@@ -32,53 +31,53 @@
 
 <div class="main-content">
 
-  <!-- DASHBOARD -->
-  <div id="dashboardSection">
-    <h2>Welcome Admin 👋</h2>
-    <div class="row mt-3">
-      <div class="col-md-4">
-        <div class="card-box">
-          <h5>Total Blogs</h5>
-          <h2 id="blogCount">0</h2>
-        </div>
+<!-- DASHBOARD -->
+<div id="dashboardSection">
+  <h2>Welcome Admin 👋</h2>
+  <div class="row mt-3">
+    <div class="col-md-4">
+      <div class="card-box">
+        <h5>Total Blogs</h5>
+        <h2 id="blogCount">0</h2>
       </div>
-      <div class="col-md-4">
-        <div class="card-box">
-          <h5>Total Leads</h5>
-          <h2 id="leadCount">0</h2>
-        </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card-box">
+        <h5>Total Leads</h5>
+        <h2 id="leadCount">0</h2>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- BLOGS -->
-  <div id="blogsSection" style="display:none;">
-    <h2>Blogs</h2>
+<!-- BLOGS -->
+<div id="blogsSection" style="display:none;">
+  <h2>Blogs</h2>
 
-    <form id="blogForm" class="mb-3">
-      <input type="hidden" id="blogId">
+  <form id="blogForm" class="mb-3">
+    <input type="hidden" id="blogId">
 
-      <input id="title" class="form-control mb-2" placeholder="Title" required>
-      <textarea id="content" class="form-control mb-2" placeholder="Content (min 10 chars)" required></textarea>
-      <input id="tags" class="form-control mb-2" placeholder="Tags (comma separated)">
+    <input id="title" class="form-control mb-2" placeholder="Title" required>
+    <textarea id="content" class="form-control mb-2" placeholder="Content (min 10 chars)" required></textarea>
+    <input id="tags" class="form-control mb-2" placeholder="Tags (comma separated)">
 
-      <select id="publish" class="form-control mb-2">
-        <option value="true">Publish</option>
-        <option value="false">Draft</option>
-      </select>
+    <select id="publish" class="form-control mb-2">
+      <option value="true">Publish</option>
+      <option value="false">Draft</option>
+    </select>
 
-      <button class="btn btn-primary">Save Blog</button>
-      <button type="button" class="btn btn-secondary" onclick="resetBlog()">Cancel</button>
-    </form>
+    <button class="btn btn-primary">Save Blog</button>
+    <button type="button" class="btn btn-secondary" onclick="resetBlog()">Cancel</button>
+  </form>
 
-    <div id="blogList"></div>
-  </div>
+  <div id="blogList"></div>
+</div>
 
-  <!-- LEADS -->
-  <div id="leadsSection" style="display:none;">
-    <h2>Leads</h2>
-    <div id="leadList"></div>
-  </div>
+<!-- LEADS -->
+<div id="leadsSection" style="display:none;">
+  <h2>Leads</h2>
+  <div id="leadList"></div>
+</div>
 
 </div>
 
@@ -95,7 +94,7 @@ const leadList = document.getElementById("leadList");
 const leadCount = document.getElementById("leadCount");
 
 /* NAV */
-function setActive(el) {
+function setActive(el){
   document.querySelectorAll(".sidebar a").forEach(a => a.classList.remove("active"));
   el.classList.add("active");
 }
@@ -109,6 +108,8 @@ async function loadBlogs(){
     headers: { Authorization: `Bearer ${token}` }
   });
   const data = await res.json();
+  console.log("LOAD BLOGS RESPONSE:", data);
+
   const blogs = data.blogs || [];
 
   blogCount.innerText = blogs.length;
@@ -128,24 +129,28 @@ async function loadBlogs(){
 blogForm.addEventListener("submit", async e => {
   e.preventDefault();
 
-  if (content.value.trim().length < 10) {
+  const titleVal = title.value.trim();
+  const contentVal = content.value.trim();
+
+  if (!titleVal || !contentVal) {
+    alert("Title and content are required");
+    return;
+  }
+
+  if (contentVal.length < 10) {
     alert("Content must be at least 10 characters long");
     return;
   }
 
   const payload = {
-    title: title.value.trim(),
-    content: content.value.trim(),
+    title: titleVal,
+    content: contentVal,
     tags: tags.value ? tags.value.split(",").map(t => t.trim()) : [],
     isPublished: publish.value === "true"
   };
 
-  const id = blogId.value;
-  const url = id ? `${BASE_URL}/blogs/${id}` : `${BASE_URL}/blogs`;
-  const method = id ? "PUT" : "POST";
-
-  const res = await fetch(url, {
-    method,
+  const res = await fetch(`${BASE_URL}/blogs`, {
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`
@@ -154,8 +159,10 @@ blogForm.addEventListener("submit", async e => {
   });
 
   const data = await res.json();
-  if (!res.ok) {
-    alert(JSON.stringify(data));
+  console.log("BLOG SAVE RESPONSE:", data);
+
+  if (!res.ok || data.success === false) {
+    alert("Blog NOT saved. Check console.");
     return;
   }
 

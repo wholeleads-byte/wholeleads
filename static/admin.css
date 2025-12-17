@@ -1,0 +1,88 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #80b123, #007bff);
+}
+
+.card {
+    border: none;
+    border-radius: 18px;
+    background: #ffffff;
+}
+
+.card-body {
+    padding: 35px;
+}
+
+.card-title {
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.form-label {
+    font-weight: 600;
+    font-size: 14px;
+    color: #475569;
+}
+
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.25s ease;
+}
+
+input::placeholder {
+    color: #94a3b8;
+}
+
+input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+button[type="submit"] {
+    background: linear-gradient(135deg, #80b123, #007bff);
+    color: #fff;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+button[type="submit"]:hover {
+    background: linear-gradient(135deg, #1d4ed8, #1e40af);
+    transform: translateY(-1px);
+}
+
+p a {
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    color: #2563eb;
+}
+
+p a:hover {
+    text-decoration: underline;
+}
+
+.shadow-sm {
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25) !important;
+}
+
+@media (max-width: 576px) {
+    .card-body {
+        padding: 25px;
+    }
+}

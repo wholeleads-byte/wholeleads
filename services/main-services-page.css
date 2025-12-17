@@ -1,0 +1,108 @@
+.hero-section {
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+        url('https://images.unsplash.com/photo-1519389950473-47ba0277781c') center/cover no-repeat;
+    color: white;
+    text-align: center;
+    padding: 120px 0;
+}
+
+.hero-section h1 {
+    font-size: 3rem;
+    font-weight: 700;
+}
+
+.hero-section p {
+    font-size: 1.2rem;
+    margin-top: 15px;
+}
+
+.services-section {
+    padding: 80px 0;
+}
+
+.service-card {
+    transition: all 0.3s ease;
+    border-radius: 15px;
+    border: 1px solid #e0e0e0;
+}
+
+.service-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.service-card img {
+    width: 100%;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    height: 200px;
+    object-fit: cover;
+}
+
+.service-card-body {
+    padding: 20px;
+}
+
+.service-card-body h5 {
+    color: #007bff;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.service-card-body p {
+    color: #555;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.service-card-body a {
+    margin-top: 10px;
+    display: inline-block;
+    text-decoration: none;
+    color: #fff;
+    background: #007bff;
+    padding: 8px 18px;
+    border-radius: 20px;
+    transition: 0.3s;
+}
+
+.service-card-body a:hover {
+    background: #0056b3;
+}
+
+.fotter-wholeleads {
+    background: #f8f9fa;
+    color: #333;
+    padding-top: 40px;
+}
+
+.fotter-sec-1 img {
+    width: 70px;
+}
+
+.social-icon a {
+    color: #007bff;
+    font-size: 22px;
+    margin-right: 15px;
+    transition: all 0.3s ease;
+}
+
+.social-icon a:hover {
+    color: #0056b3;
+}
+
+.fotter-sec-2 h3 {
+    color: #007bff;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.fotter-sec-2 a {
+    text-decoration: none;
+    color: #444;
+    transition: all 0.3s ease;
+}
+
+.fotter-sec-2 a:hover {
+    color: #007bff;
+}

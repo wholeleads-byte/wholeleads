@@ -1,0 +1,76 @@
+:root {
+    --main: #8bc53f;
+    --accent: #007bff;
+    --bg: #f7f8fa;
+    --card: #ffffff;
+    --muted: #6c757d;
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+
+body {
+    background: var(--bg);
+    color: #222
+}
+
+.hero {
+    background: linear-gradient(90deg, rgba(139, 197, 63, 0.12) 0%, rgba(0, 123, 255, 0.06) 100%);
+    border-left: 6px solid var(--main);
+    border-radius: 12px;
+    padding: 36px;
+}
+
+.badge-main {
+    background: var(--main);
+    color: #fff;
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-weight: 600
+}
+
+.btn-main {
+    background: var(--main);
+    border: 0;
+    color: #fff
+}
+
+.btn-outline-accent {
+    border-color: var(--accent);
+    color: var(--accent)
+}
+
+.stat {
+    font-weight: 800;
+    font-size: 1.6rem;
+    color: var(--main)
+}
+
+.feature-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: inline-grid;
+    place-items: center;
+    background: #fff;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06)
+}
+
+.card-soft {
+    background: linear-gradient(180deg, #fff 0%, #fbfcfd 100%);
+    border: 0;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(16, 24, 40, 0.06);
+}
+
+footer {
+    padding: 28px 0;
+}
+
+@media (max-width:767px) {
+    .hero {
+        padding: 22px
+    }
+
+    .stat {
+        font-size: 1.25rem
+    }
+}

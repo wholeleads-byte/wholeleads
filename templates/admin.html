@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WholeLeads Admin</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../static/wholeadmin.css">
+
+<script>
+const BASE_URL = "https://leads-backend-2piw.onrender.com/api";
+const token = localStorage.getItem("token");
+if (!token) location.href = "adminlogin.html";
+</script>
+</head>
+
+<body>
+
+<div class="sidebar">
+  <h2>WholeLeads</h2>
+  <a href="#" class="active" onclick="showDashboard(this)">Dashboard</a>
+  <a href="#" onclick="showBlogs(this)">Blogs</a>
+  <a href="#" onclick="showLeads(this)">Leads</a>
+  <a href="#" onclick="logout()">Logout</a>
+</div>
+
+<div class="main-content">
+
+<div id="dashboardSection">
+  <h2>Welcome Admin 👋</h2>
+
+  <div class="row mt-3">
+    <div class="col-md-4">
+      <div class="card-box">
+        <h5>Total Blogs</h5>
+        <h2 id="blogCount">0</h2>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card-box">
+        <h5>Total Leads</h5>
+        <h2 id="leadCount">0</h2>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="blogsSection" style="display:none;">
+  <h2>Blogs</h2>
+
+  <form id="blogForm" class="mb-3">
+    <input type="hidden" id="blogId">
+
+    <input id="title" class="form-control mb-2" placeholder="Title" required>
+    <textarea id="content" class="form-control mb-2" placeholder="Content" required></textarea>
+    <input id="tags" class="form-control mb-2" placeholder="Tags (comma separated)">
+
+    <select id="publish" class="form-control mb-2">
+      <option value="true">Publish</option>
+      <option value="false">Draft</option>
+    </select>
+
+    <button class="btn btn-primary" type="submit">Save Blog</button>
+    <button class="btn btn-secondary" type="button" onclick="resetBlog()">Cancel</button>
+  </form>
+
+  <div id="blogList"></div>
+</div>
+
+<div id="leadsSection" style="display:none;">
+  <h2>Leads (Contact Form)</h2>
+  <div id="leadList"></div>
+</div>
+
+</div>
+
+<script>
+
+const dashboardSection = document.getElementById("dashboardSection");
+const blogsSection = document.getElementById("blogsSection");
+const leadsSection = document.getElementById("leadsSection");
+
+const blogList = document.getElementById("blogList");
+const blogForm = document.getElementById("blogForm");
+const blogCount = document.getElementById("blogCount");
+
+const leadList = document.getElementById("leadList");
+const leadCount = document.getElementById("leadCount");
+
+
+function setActive(el) {
+  document.querySelectorAll(".sidebar a").forEach(a => a.classList.remove("active"));
+  el.classList.add("active");
+}
+
+function showDashboard(el) {
+  dashboardSection.style.display = "block";
+  blogsSection.style.display = "none";
+  leadsSection.style.display = "none";
+  setActive(el);
+  loadBlogs();
+  loadLeads();
+}
+
+function showBlogs(el) {
+  dashboardSection.style.display = "none";
+  blogsSection.style.display = "block";
+  leadsSection.style.display = "none";
+  setActive(el);
+  loadBlogs();
+}
+
+function showLeads(el) {
+  dashboardSection.style.display = "none";
+  blogsSection.style.display = "none";
+  leadsSection.style.display = "block";
+  setActive(el);
+  loadLeads();
+}
+
+
+async function loadBlogs() {
+  const res = await fetch(`${BASE_URL}/blogs`, {
+    headers: { Authorization: token }
+  });
+  const data = await res.json();
+  const blogs = data.blogs || [];
+
+  blogCount.innerText = blogs.length;
+
+  blogList.innerHTML = blogs.length
+    ? blogs.map(b => `
+      <div class="card mb-2">
+        <div class="card-body">
+          <h5>${b.title}</h5>
+          <p>${b.content.substring(0,100)}...</p>
+          <button class="btn btn-warning btn-sm" onclick='editBlog(${JSON.stringify(b)})'>Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteBlog('${b._id}')">Delete</button>
+        </div>
+      </div>
+    `).join("")
+    : "<p>No blogs found</p>";
+}
+
+blogForm.addEventListener("submit", async e => {
+  e.preventDefault();
+
+  const id = blogId.value;
+  const payload = {
+    title: title.value.trim(),
+    content: content.value.trim(),
+    tags: tags.value ? tags.value.split(",").map(t => t.trim()) : [],
+    isPublished: publish.value === "true"
+  };
+
+  const url = id ? `${BASE_URL}/blogs/${id}` : `${BASE_URL}/blogs`;
+  const method = id ? "PUT" : "POST";
+
+  await fetch(url, {
+    method,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: token
+    },
+    body: JSON.stringify(payload)
+  });
+
+  resetBlog();
+  loadBlogs();
+});
+
+function editBlog(b) {
+  showBlogs(document.querySelectorAll(".sidebar a")[1]);
+  blogId.value = b._id;
+  title.value = b.title;
+  content.value = b.content;
+  tags.value = b.tags.join(",");
+  publish.value = b.isPublished ? "true" : "false";
+}
+
+async function deleteBlog(id) {
+  if (!confirm("Delete blog?")) return;
+  await fetch(`${BASE_URL}/blogs/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: token }
+  });
+  loadBlogs();
+}
+
+function resetBlog() {
+  blogId.value = "";
+  blogForm.reset();
+}
+
+
+async function loadLeads() {
+  const res = await fetch(`${BASE_URL}/leads`, {
+    headers: { Authorization: token }
+  });
+  const data = await res.json();
+  const leads = data.leads || [];
+
+  leadCount.innerText = leads.length;
+
+  leadList.innerHTML = leads.length
+    ? leads.map(l => `
+      <div class="card mb-2">
+        <div class="card-body">
+          <h6>${l.name} (${l.email})</h6>
+          <p><b>Phone:</b> ${l.phone || "NA"}</p>
+          <p>${l.message}</p>
+          <small>${new Date(l.createdAt).toLocaleString()}</small><br>
+          <button class="btn btn-danger btn-sm mt-2" onclick="deleteLead('${l._id}')">Delete</button>
+        </div>
+      </div>
+    `).join("")
+    : "<p>No leads found</p>";
+}
+
+async function deleteLead(id) {
+  if (!confirm("Delete lead?")) return;
+  await fetch(`${BASE_URL}/leads/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: token }
+  });
+  loadLeads();
+}
+
+function logout() {
+  localStorage.removeItem("token");
+  location.href = "adminlogin.html";
+}
+
+loadBlogs();
+loadLeads();
+</script>
+
+</body>
+</html>

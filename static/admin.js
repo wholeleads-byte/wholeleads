@@ -1,3 +1,19 @@
+tinymce.init({
+  selector: '#content',
+  height: 350,
+  plugins: 'link lists image media table autoresize',
+  toolbar: 'undo redo | styles | bold italic underline | ' +
+           'alignleft aligncenter alignright | bullist numlist | ' +
+           'link image media table | removeformat',
+  menubar: false,
+  branding: false,
+  automatic_uploads: true,
+  images_upload_handler: async (blobInfo) => {
+    // temporarily embed as base64 (works without backend change)
+    return `data:${blobInfo.blob().type};base64,${blobInfo.base64()}`;
+  }
+});
+
 /* DOM references */
 const dashboardSection = document.getElementById("dashboardSection");
 const blogsSection = document.getElementById("blogsSection");

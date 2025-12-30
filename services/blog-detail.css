@@ -1,0 +1,16 @@
+.blog-wrapper h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 18px;
+}
+
+.blog-meta {
+  color: #777;
+  font-size: 14px;
+  margin-bottom: 18px;
+}
+
+.blog-content {
+  line-height: 1.7;
+  font-size: 16px;
+}

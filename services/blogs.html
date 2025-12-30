@@ -20,17 +20,26 @@
 const BASE_URL = "https://leads-backend-2piw.onrender.com/api";
 
 async function loadBlogs() {
+  const container = document.getElementById("blogsContainer");
+  container.innerHTML = "<p class='text-center'>Loading...</p>";
+
   try {
     const res = await fetch(`${BASE_URL}/blogs`);
     const data = await res.json();
 
-    // 🔴 safety + publish filter
-    const blogs = (data.blogs || []).filter(b => b.isPublished === true);
+    console.log("API RESPONSE ===>", data);
 
-    const container = document.getElementById("blogsContainer");
+    // ✔ blogs actually data.data me aa rahe hain
+    const blogs = (data.data || []).filter(b => b.isPublished === true);
 
-    container.innerHTML = blogs.length
-      ? blogs.map(b => `
+    if (!blogs.length) {
+      container.innerHTML = "<p class='text-center'>No blogs found</p>";
+      return;
+    }
+
+    container.innerHTML = blogs
+      .map(
+        (b) => `
         <div class="col-md-4 mb-4">
           <div class="card h-100 shadow-sm">
             <div class="card-body">
@@ -38,18 +47,19 @@ async function loadBlogs() {
               <p class="card-text">
                 ${(b.content || "").substring(0,150)}...
               </p>
+
               <a href="blog-detail.html?id=${b._id}" class="btn btn-primary btn-sm">
                 Read More
               </a>
             </div>
           </div>
         </div>
-      `).join("")
-      : "<p class='text-center'>No blogs found</p>";
-
+      `
+      )
+      .join("");
   } catch (err) {
     console.error("Error loading blogs:", err);
-    document.getElementById("blogsContainer").innerHTML =
+    container.innerHTML =
       "<p class='text-danger text-center'>Failed to load blogs</p>";
   }
 }

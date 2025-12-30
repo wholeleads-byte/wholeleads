@@ -31,9 +31,9 @@ if (!token || token === "undefined") {
 
 <div class="main-content">
 
-<!-- DASHBOARD -->
 <div id="dashboardSection">
   <h2>Welcome Admin 👋</h2>
+
   <div class="row mt-3">
     <div class="col-md-4">
       <div class="card-box">
@@ -41,6 +41,7 @@ if (!token || token === "undefined") {
         <h2 id="blogCount">0</h2>
       </div>
     </div>
+
     <div class="col-md-4">
       <div class="card-box">
         <h5>Total Leads</h5>
@@ -50,7 +51,6 @@ if (!token || token === "undefined") {
   </div>
 </div>
 
-<!-- BLOGS -->
 <div id="blogsSection" style="display:none;">
   <h2>Blogs</h2>
 
@@ -58,8 +58,12 @@ if (!token || token === "undefined") {
     <input type="hidden" id="blogId">
 
     <input id="title" class="form-control mb-2" placeholder="Title" required>
-    <textarea id="content" class="form-control mb-2" placeholder="Content (min 10 chars)" required></textarea>
-    <input id="tags" class="form-control mb-2" placeholder="Tags (comma separated)">
+
+    <textarea id="content" class="form-control mb-2"
+              placeholder="Content (min 10 chars)" required></textarea>
+
+    <input id="tags" class="form-control mb-2"
+           placeholder="Tags (comma separated)">
 
     <select id="publish" class="form-control mb-2">
       <option value="true">Publish</option>
@@ -73,7 +77,6 @@ if (!token || token === "undefined") {
   <div id="blogList"></div>
 </div>
 
-<!-- LEADS -->
 <div id="leadsSection" style="display:none;">
   <h2>Leads</h2>
   <div id="leadList"></div>
@@ -81,146 +84,7 @@ if (!token || token === "undefined") {
 
 </div>
 
-<script>
-const dashboardSection = document.getElementById("dashboardSection");
-const blogsSection = document.getElementById("blogsSection");
-const leadsSection = document.getElementById("leadsSection");
-
-const blogForm = document.getElementById("blogForm");
-const blogList = document.getElementById("blogList");
-const blogCount = document.getElementById("blogCount");
-
-const leadList = document.getElementById("leadList");
-const leadCount = document.getElementById("leadCount");
-
-/* NAV */
-function setActive(el){
-  document.querySelectorAll(".sidebar a").forEach(a => a.classList.remove("active"));
-  el.classList.add("active");
-}
-function showDashboard(el){dashboardSection.style.display="block";blogsSection.style.display="none";leadsSection.style.display="none";setActive(el);loadBlogs();loadLeads();}
-function showBlogs(el){dashboardSection.style.display="none";blogsSection.style.display="block";leadsSection.style.display="none";setActive(el);loadBlogs();}
-function showLeads(el){dashboardSection.style.display="none";blogsSection.style.display="none";leadsSection.style.display="block";setActive(el);loadLeads();}
-
-/* BLOGS */
-async function loadBlogs(){
-  const res = await fetch(`${BASE_URL}/blogs`, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-  const data = await res.json();
-  console.log("LOAD BLOGS RESPONSE:", data);
-
-  const blogs = data.blogs || [];
-
-  blogCount.innerText = blogs.length;
-
-  blogList.innerHTML = blogs.length ? blogs.map(b => `
-    <div class="card mb-2">
-      <div class="card-body">
-        <h5>${b.title}</h5>
-        <p>${(b.content || "").substring(0,100)}...</p>
-        <button class="btn btn-warning btn-sm" onclick='editBlog(${JSON.stringify(b)})'>Edit</button>
-        <button class="btn btn-danger btn-sm" onclick="deleteBlog('${b._id}')">Delete</button>
-      </div>
-    </div>
-  `).join("") : "<p>No blogs found</p>";
-}
-
-blogForm.addEventListener("submit", async e => {
-  e.preventDefault();
-
-  const titleVal = title.value.trim();
-  const contentVal = content.value.trim();
-
-  if (!titleVal || !contentVal) {
-    alert("Title and content are required");
-    return;
-  }
-
-  if (contentVal.length < 10) {
-    alert("Content must be at least 10 characters long");
-    return;
-  }
-
-  const payload = {
-    title: titleVal,
-    content: contentVal,
-    tags: tags.value ? tags.value.split(",").map(t => t.trim()) : [],
-    isPublished: publish.value === "true"
-  };
-
-  const res = await fetch(`${BASE_URL}/blogs`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
-    },
-    body: JSON.stringify(payload)
-  });
-
-  const data = await res.json();
-  console.log("BLOG SAVE RESPONSE:", data);
-
-  if (!res.ok || data.success === false) {
-    alert("Blog NOT saved. Check console.");
-    return;
-  }
-
-  alert("Blog saved successfully");
-  resetBlog();
-  loadBlogs();
-});
-
-function editBlog(b){
-  showBlogs(document.querySelectorAll(".sidebar a")[1]);
-  blogId.value = b._id;
-  title.value = b.title;
-  content.value = b.content || "";
-  tags.value = (b.tags || []).join(",");
-  publish.value = b.isPublished ? "true" : "false";
-}
-
-async function deleteBlog(id){
-  if (!confirm("Delete blog?")) return;
-  await fetch(`${BASE_URL}/blogs/${id}`, {
-    method: "DELETE",
-    headers: { Authorization: `Bearer ${token}` }
-  });
-  loadBlogs();
-}
-
-function resetBlog(){
-  blogId.value = "";
-  blogForm.reset();
-}
-
-/* LEADS */
-async function loadLeads(){
-  const res = await fetch(`${BASE_URL}/leads`, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-  const data = await res.json();
-  const leads = data.leads || [];
-
-  leadCount.innerText = leads.length;
-
-  leadList.innerHTML = leads.length ? leads.map(l => `
-    <div class="card mb-2">
-      <div class="card-body">
-        <b>${l.name}</b> (${l.email})<br>${l.message}
-      </div>
-    </div>
-  `).join("") : "<p>No leads found</p>";
-}
-
-function logout(){
-  localStorage.clear();
-  location.href = "adminlogin.html";
-}
-
-loadBlogs();
-loadLeads();
-</script>
+<script src="../static/admin.js"></script>
 
 </body>
 </html>

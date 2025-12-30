@@ -147,13 +147,29 @@ function editBlog(b){
 async function deleteBlog(id){
   if (!confirm("Delete blog?")) return;
 
-  await fetch(`${BASE_URL}/blogs/${id}`, {
-    method: "DELETE",
-    headers: { Authorization: `Bearer ${token}` }
-  });
+  try {
+    const res = await fetch(`${BASE_URL}/blogs/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` }
+    });
 
-  loadBlogs();
+    const data = await res.json();
+    console.log("DELETE RESPONSE:", data);
+
+    if (!res.ok || data.success === false) {
+      alert("Failed to delete blog");
+      return;
+    }
+
+    alert("Blog deleted successfully 👍");
+    loadBlogs();
+
+  } catch (err) {
+    console.error(err);
+    alert("Something went wrong while deleting");
+  }
 }
+
 
 function resetBlog(){
   blogId.value = "";

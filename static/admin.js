@@ -1,17 +1,17 @@
 tinymce.init({
   selector: '#content',
-  height: 550,
   plugins: 'link lists image media table autoresize',
-  toolbar: 'undo redo | styles | bold italic underline | ' +
-           'alignleft aligncenter alignright | bullist numlist | ' +
-           'link image media table | removeformat',
+  toolbar:
+    'undo redo | styles | bold italic underline | ' +
+    'alignleft aligncenter alignright | bullist numlist | ' +
+    'link image media table | removeformat',
   menubar: false,
   branding: false,
+  min_height: 350,
+  max_height: 900,
   automatic_uploads: true,
-  images_upload_handler: async (blobInfo) => {
-    // temporarily embed as base64 (works without backend change)
-    return `data:${blobInfo.blob().type};base64,${blobInfo.base64()}`;
-  }
+  images_upload_handler: async (blobInfo) =>
+    `data:${blobInfo.blob().type};base64,${blobInfo.base64()}`
 });
 
 /* DOM references */

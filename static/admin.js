@@ -1,6 +1,6 @@
 tinymce.init({
   selector: '#content',
-  height: 350,
+  height: 550,
   plugins: 'link lists image media table autoresize',
   toolbar: 'undo redo | styles | bold italic underline | ' +
            'alignleft aligncenter alignright | bullist numlist | ' +

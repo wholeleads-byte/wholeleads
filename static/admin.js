@@ -1,18 +1,22 @@
 tinymce.init({
   selector: '#content',
   plugins: 'link lists image media table autoresize',
+  menubar: false,
+  branding: false,
+  promotion: false,
   toolbar:
     'undo redo | styles | bold italic underline | ' +
     'alignleft aligncenter alignright | bullist numlist | ' +
     'link image media table | removeformat',
-  menubar: false,
-  branding: false,
-  min_height: 350,
+
+  min_height: 450,
   max_height: 900,
+
   automatic_uploads: true,
   images_upload_handler: async (blobInfo) =>
     `data:${blobInfo.blob().type};base64,${blobInfo.base64()}`
 });
+
 
 /* DOM references */
 const dashboardSection = document.getElementById("dashboardSection");

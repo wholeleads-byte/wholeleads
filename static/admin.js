@@ -18,6 +18,7 @@ tinymce.init({
 });
 
 
+
 /* DOM references */
 const dashboardSection = document.getElementById("dashboardSection");
 const blogsSection = document.getElementById("blogsSection");

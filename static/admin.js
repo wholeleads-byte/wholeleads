@@ -108,7 +108,7 @@ blogForm.addEventListener("submit", async e => {
 
   const payload = {
     title: title.value.trim(),
-    content: content.value.trim(),
+    content: tinymce.get("content").getContent(),
     tags: tags.value ? tags.value.split(",").map(t => t.trim()) : [],
     isPublished: publish.value === "true"
   };

@@ -17,7 +17,6 @@ tinymce.init({
   toolbar:
     "undo redo | styles | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image media table | removeformat",
   min_height: 450,
-  max_height: 900,
   automatic_uploads: true,
   images_upload_handler: async (blobInfo) =>
     `data:${blobInfo.blob().type};base64,${blobInfo.base64()}`
@@ -28,12 +27,18 @@ const dashboardSection = document.getElementById("dashboardSection");
 const blogsSection = document.getElementById("blogsSection");
 const leadsSection = document.getElementById("leadsSection");
 
-const blogForm = document.getElementById("blogForm");
-const blogList = document.getElementById("blogList");
+const blogForm  = document.getElementById("blogForm");
+const blogList  = document.getElementById("blogList");
 const blogCount = document.getElementById("blogCount");
 
-const leadList = document.getElementById("leadList");
+const leadList  = document.getElementById("leadList");
 const leadCount = document.getElementById("leadCount");
+
+/* ⭐ MISSING EARLIER — THESE WERE BREAKING SAVE */
+const blogId  = document.getElementById("blogId");
+const title   = document.getElementById("title");
+const tags    = document.getElementById("tags");
+const publish = document.getElementById("publish");
 
 /* NAVIGATION */
 function setActive(el){
@@ -110,48 +115,54 @@ async function loadBlogs(){
 blogForm.addEventListener("submit", async e => {
   e.preventDefault();
 
-  const payload = {
-    title: title.value.trim(),
-    content: tinymce.get("content").getContent(),
-    tags: tags.value ? tags.value.split(",").map(t => t.trim()) : [],
-    isPublished: publish.value === "true"
-  };
+  try {
+    const payload = {
+      title: title.value.trim(),
+      content: tinymce.get("content").getContent(),
+      tags: tags.value ? tags.value.split(",").map(t => t.trim()) : [],
+      isPublished: publish.value === "true"
+    };
 
-  if (!payload.title || !payload.content){
-    alert("Title and content are required");
-    return;
+    if (!payload.title || !payload.content){
+      alert("Title and content are required");
+      return;
+    }
+
+    if (payload.content.length < 10){
+      alert("Content must be at least 10 characters");
+      return;
+    }
+
+    const method = blogId.value ? "PUT" : "POST";
+    const url = blogId.value
+        ? `${BASE_URL}/blogs/${blogId.value}`
+        : `${BASE_URL}/blogs`;
+
+    const res = await fetch(url, {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+    console.log("BLOG SAVE RESPONSE:", data);
+
+    if (!res.ok || data.success === false){
+      alert("Blog NOT saved");
+      return;
+    }
+
+    alert("Blog saved successfully 👍");
+    resetBlog();
+    loadBlogs();
+
+  } catch(err){
+    console.error(err);
+    alert("Something went wrong while saving");
   }
-
-  if (payload.content.length < 10){
-    alert("Content must be at least 10 characters");
-    return;
-  }
-
-  const method = blogId.value ? "PUT" : "POST";
-  const url = blogId.value
-      ? `${BASE_URL}/blogs/${blogId.value}`
-      : `${BASE_URL}/blogs`;
-
-  const res = await fetch(url, {
-    method,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
-    },
-    body: JSON.stringify(payload)
-  });
-
-  const data = await res.json();
-  console.log("BLOG SAVE RESPONSE:", data);
-
-  if (!res.ok || data.success === false){
-    alert("Blog NOT saved");
-    return;
-  }
-
-  alert("Blog saved successfully 👍");
-  resetBlog();
-  loadBlogs();
 });
 
 /* EDIT BLOG */
@@ -160,10 +171,7 @@ function editBlog(b){
 
   blogId.value = b._id;
   title.value = b.title || "";
-
-  // ⭐ load content inside TinyMCE
   tinymce.get("content").setContent(b.content || "");
-
   tags.value = (b.tags || []).join(",");
   publish.value = b.isPublished ? "true" : "false";
 }
@@ -198,8 +206,6 @@ async function deleteBlog(id){
 function resetBlog(){
   blogId.value = "";
   blogForm.reset();
-
-  // ⭐ clear editor too
   tinymce.get("content").setContent("");
 }
 

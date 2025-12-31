@@ -123,8 +123,11 @@ async function loadBlogs(){
             <h5>${b.title}</h5>
             <div>${b.content}</div>
 
-            <button class="btn btn-warning btn-sm"
-              onclick='editBlog(${JSON.stringify(b)})'>Edit</button>
+           <button class="btn btn-warning btn-sm"
+  onclick='editBlog(${JSON.stringify(b)})'>
+  Edit
+</button>
+
 
             <button class="btn btn-danger btn-sm"
               onclick="deleteBlog('${b._id}')">Delete</button>

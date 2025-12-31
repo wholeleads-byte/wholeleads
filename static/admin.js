@@ -10,9 +10,19 @@ if (!token || token === "undefined") {
 /* TINYMCE */
 tinymce.init({
   selector: "#content",
+
   plugins: "image link media table lists autoresize",
-  menubar: false,
+
+  menubar: "insert",
+
+  toolbar:
+    "undo redo | styles | bold italic underline | " +
+    "alignleft aligncenter alignright | bullist numlist | " +
+    "link image media table | removeformat",
+
   branding: false,
+  automatic_uploads: true,
+
 
   automatic_uploads: true,
 

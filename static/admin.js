@@ -7,22 +7,35 @@ if (!token || token === "undefined") {
   location.href = "adminlogin.html";
 }
 
-/* EDITOR */
+/* TINYMCE */
 tinymce.init({
   selector: "#content",
-  plugins: "link lists image media table autoresize",
+  plugins: "image link media table lists autoresize",
   menubar: false,
   branding: false,
-  promotion: false,
-  toolbar:
-    "undo redo | styles | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image media table | removeformat",
-  min_height: 450,
+
   automatic_uploads: true,
-  images_upload_handler: async (blobInfo) =>
-    `data:${blobInfo.blob().type};base64,${blobInfo.base64()}`
+
+  /* ⭐ CLOUDINARY IMAGE UPLOAD ⭐ */
+  images_upload_handler: async (blobInfo) => {
+    const form = new FormData();
+    form.append("file", blobInfo.blob());
+    form.append("upload_preset", "blogs_upload");   // your preset name
+
+    const res = await fetch(
+      "https://api.cloudinary.com/v1_1/dnfdijaa3/image/upload", // 👈 your cloud name
+      {
+        method: "POST",
+        body: form
+      }
+    );
+
+    const data = await res.json();
+    return data.secure_url;    // TinyMCE will insert this URL
+  }
 });
 
-/* DOM */
+/* DOM refs */
 const dashboardSection = document.getElementById("dashboardSection");
 const blogsSection = document.getElementById("blogsSection");
 const leadsSection = document.getElementById("leadsSection");
@@ -71,7 +84,7 @@ function showLeads(el){
   loadLeads();
 }
 
-/* BLOGS */
+/* LOAD BLOGS */
 async function loadBlogs(){
   try {
     const res = await fetch(`${BASE_URL}/blogs`, {
@@ -88,29 +101,24 @@ async function loadBlogs(){
         <div class="card mb-2">
           <div class="card-body">
             <h5>${b.title}</h5>
-            <p>${(b.content || "").substring(0,100)}...</p>
+            <p>${(b.content || "").substring(0,120)}...</p>
 
             <button class="btn btn-warning btn-sm"
-              onclick='editBlog(${JSON.stringify(b)})'>
-              Edit
-            </button>
+              onclick='editBlog(${JSON.stringify(b)})'>Edit</button>
 
             <button class="btn btn-danger btn-sm"
-              onclick="deleteBlog('${b._id}')">
-              Delete
-            </button>
+              onclick="deleteBlog('${b._id}')">Delete</button>
           </div>
         </div>
       `).join("")
       : "<p>No blogs found</p>";
 
   } catch (e) {
-    console.error(e);
     blogList.innerHTML = "<p class='text-danger'>Failed to load blogs</p>";
   }
 }
 
-/* SAVE */
+/* SAVE BLOG */
 blogForm.addEventListener("submit", async e => {
   e.preventDefault();
 
@@ -141,10 +149,9 @@ blogForm.addEventListener("submit", async e => {
   });
 
   const data = await res.json();
-  console.log("BLOG SAVE RESPONSE:", data);
 
   if (!res.ok || data.success === false){
-    alert("Blog NOT saved");
+    alert(data.message || "Blog NOT saved");
     return;
   }
 
@@ -156,6 +163,7 @@ blogForm.addEventListener("submit", async e => {
 /* EDIT */
 function editBlog(b){
   showBlogs(document.querySelectorAll(".sidebar a")[1]);
+
   blogId.value = b._id;
   title.value = b.title || "";
   tinymce.get("content").setContent(b.content || "");
@@ -211,7 +219,7 @@ function logout(){
   location.href = "adminlogin.html";
 }
 
-/* MAKE FUNCTIONS ACCESSIBLE TO HTML */
+/* MAKE FUNCTIONS AVAILABLE */
 window.showDashboard = showDashboard;
 window.showBlogs = showBlogs;
 window.showLeads = showLeads;

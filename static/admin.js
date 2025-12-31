@@ -1,23 +1,27 @@
+/* GLOBAL VARS */
+const BASE_URL = "https://leads-backend-2piw.onrender.com/api";
+const token = localStorage.getItem("token");
+
+if (!token || token === "undefined") {
+  localStorage.clear();
+  location.href = "adminlogin.html";
+}
+
+/* ⭐ INIT TINYMCE */
 tinymce.init({
-  selector: '#content',
-  plugins: 'link lists image media table autoresize',
+  selector: "#content",
+  plugins: "link lists image media table autoresize",
   menubar: false,
   branding: false,
   promotion: false,
   toolbar:
-    'undo redo | styles | bold italic underline | ' +
-    'alignleft aligncenter alignright | bullist numlist | ' +
-    'link image media table | removeformat',
-
+    "undo redo | styles | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image media table | removeformat",
   min_height: 450,
   max_height: 900,
-
   automatic_uploads: true,
   images_upload_handler: async (blobInfo) =>
     `data:${blobInfo.blob().type};base64,${blobInfo.base64()}`
 });
-
-
 
 /* DOM references */
 const dashboardSection = document.getElementById("dashboardSection");
@@ -30,7 +34,6 @@ const blogCount = document.getElementById("blogCount");
 
 const leadList = document.getElementById("leadList");
 const leadCount = document.getElementById("leadCount");
-
 
 /* NAVIGATION */
 function setActive(el){
@@ -64,7 +67,6 @@ function showLeads(el){
   loadLeads();
 }
 
-
 /* BLOGS */
 async function loadBlogs(){
   try {
@@ -73,8 +75,6 @@ async function loadBlogs(){
     });
 
     const data = await res.json();
-    console.log("LOAD BLOGS RESPONSE:", data);
-
     const blogs = data.data || [];
 
     blogCount.innerText = blogs.length;
@@ -105,7 +105,6 @@ async function loadBlogs(){
     blogList.innerHTML = "<p class='text-danger'>Failed to load blogs</p>";
   }
 }
-
 
 /* SAVE BLOG */
 blogForm.addEventListener("submit", async e => {
@@ -150,21 +149,26 @@ blogForm.addEventListener("submit", async e => {
     return;
   }
 
-  alert("Blog saved");
+  alert("Blog saved successfully 👍");
   resetBlog();
   loadBlogs();
 });
 
-
+/* EDIT BLOG */
 function editBlog(b){
   showBlogs(document.querySelectorAll(".sidebar a")[1]);
+
   blogId.value = b._id;
   title.value = b.title || "";
-  content.value = b.content || "";
+
+  // ⭐ load content inside TinyMCE
+  tinymce.get("content").setContent(b.content || "");
+
   tags.value = (b.tags || []).join(",");
   publish.value = b.isPublished ? "true" : "false";
 }
 
+/* DELETE BLOG */
 async function deleteBlog(id){
   if (!confirm("Delete blog?")) return;
 
@@ -175,7 +179,6 @@ async function deleteBlog(id){
     });
 
     const data = await res.json();
-    console.log("DELETE RESPONSE:", data);
 
     if (!res.ok || data.success === false) {
       alert("Failed to delete blog");
@@ -191,12 +194,14 @@ async function deleteBlog(id){
   }
 }
 
-
+/* RESET FORM */
 function resetBlog(){
   blogId.value = "";
   blogForm.reset();
-}
 
+  // ⭐ clear editor too
+  tinymce.get("content").setContent("");
+}
 
 /* LEADS */
 async function loadLeads(){
@@ -227,13 +232,11 @@ async function loadLeads(){
   }
 }
 
-
 /* LOGOUT */
 function logout(){
   localStorage.clear();
   location.href = "adminlogin.html";
 }
-
 
 /* INITIAL LOAD */
 loadBlogs();

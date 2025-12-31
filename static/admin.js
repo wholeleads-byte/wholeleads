@@ -10,21 +10,9 @@ if (!token || token === "undefined") {
 /* TINYMCE */
 tinymce.init({
   selector: "#content",
-
   plugins: "image link media table lists autoresize",
-
-  menubar: "insert",
-
-  toolbar:
-    "undo redo | styles | bold italic underline | " +
-    "alignleft aligncenter alignright | bullist numlist | " +
-    "link image media table | removeformat",
-
+  menubar: false,
   branding: false,
-  automatic_uploads: true,
-
-
-  automatic_uploads: true,
 
   /* ⭐ CLOUDINARY IMAGE UPLOAD ⭐ */
 images_upload_handler: async (blobInfo, success, failure) => {

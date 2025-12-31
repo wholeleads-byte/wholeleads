@@ -13,25 +13,28 @@ tinymce.init({
   plugins: "image link media table lists autoresize",
   menubar: false,
   branding: false,
-
   automatic_uploads: true,
 
-  /* ⭐ CLOUDINARY IMAGE UPLOAD ⭐ */
-  images_upload_handler: async (blobInfo) => {
-    const form = new FormData();
-    form.append("file", blobInfo.blob());
-    form.append("upload_preset", "blogs_upload");   // your preset name
+  /* ⭐ CLOUDINARY IMAGE UPLOAD — FINAL ⭐ */
+  images_upload_handler: async (blobInfo, success, failure) => {
+    try {
+      const form = new FormData();
+      form.append("file", blobInfo.blob());
+      form.append("upload_preset", "blogs_upload");      // your preset
 
-    const res = await fetch(
-      "https://api.cloudinary.com/v1_1/dnfdijaa3/image/upload", // 👈 your cloud name
-      {
-        method: "POST",
-        body: form
-      }
-    );
+      const res = await fetch(
+        "https://api.cloudinary.com/v1_1/dnfdijaa3/image/upload",
+        { method: "POST", body: form }
+      );
 
-    const data = await res.json();
-    return data.secure_url;    // TinyMCE will insert this URL
+      const data = await res.json();
+
+      // 🔥 Replace blob: URL with real Cloudinary URL
+      success(data.secure_url);
+    } catch (err) {
+      console.error(err);
+      failure("Upload failed");
+    }
   }
 });
 
@@ -84,26 +87,6 @@ function showLeads(el){
   loadLeads();
 }
 
-/* EDIT BLOG */
-function editBlog(b){
-  // open blogs section
-  showBlogs(document.querySelectorAll(".sidebar a")[1]);
-
-  // fill form fields
-  blogId.value = b._id || "";
-  title.value = b.title || "";
-
-  // load content inside TinyMCE editor
-  tinymce.get("content").setContent(b.content || "");
-
-  // tags
-  tags.value = Array.isArray(b.tags) ? b.tags.join(",") : (b.tags || "");
-
-  // publish status
-  publish.value = b.isPublished ? "true" : "false";
-}
-
-
 /* LOAD BLOGS */
 async function loadBlogs(){
   try {
@@ -123,20 +106,22 @@ async function loadBlogs(){
             <h5>${b.title}</h5>
             <div>${b.content}</div>
 
-           <button class="btn btn-warning btn-sm"
-  onclick='editBlog(${JSON.stringify(b)})'>
-  Edit
-</button>
-
+            <button class="btn btn-warning btn-sm"
+              onclick='editBlog(${JSON.stringify(b)})'>
+              Edit
+            </button>
 
             <button class="btn btn-danger btn-sm"
-              onclick="deleteBlog('${b._id}')">Delete</button>
+              onclick="deleteBlog('${b._id}')">
+              Delete
+            </button>
           </div>
         </div>
       `).join("")
       : "<p>No blogs found</p>";
 
   } catch (e) {
+    console.error(e);
     blogList.innerHTML = "<p class='text-danger'>Failed to load blogs</p>";
   }
 }
@@ -183,14 +168,14 @@ blogForm.addEventListener("submit", async e => {
   loadBlogs();
 });
 
-/* EDIT */
+/* EDIT BLOG (single correct function) */
 function editBlog(b){
   showBlogs(document.querySelectorAll(".sidebar a")[1]);
 
-  blogId.value = b._id;
+  blogId.value = b._id || "";
   title.value = b.title || "";
   tinymce.get("content").setContent(b.content || "");
-  tags.value = (b.tags || []).join(",");
+  tags.value = Array.isArray(b.tags) ? b.tags.join(",") : "";
   publish.value = b.isPublished ? "true" : "false";
 }
 
@@ -198,12 +183,11 @@ function editBlog(b){
 async function deleteBlog(id){
   if (!confirm("Delete blog?")) return;
 
-  const res = await fetch(`${BASE_URL}/blogs/${id}`, {
+  await fetch(`${BASE_URL}/blogs/${id}`, {
     method: "DELETE",
     headers: { Authorization: `Bearer ${token}` }
   });
 
-  await res.json();
   alert("Blog deleted 👍");
   loadBlogs();
 }
@@ -242,13 +226,15 @@ function logout(){
   location.href = "adminlogin.html";
 }
 
-/* MAKE FUNCTIONS AVAILABLE */
+/* MAKE FUNCTIONS PUBLIC */
 window.showDashboard = showDashboard;
-window.showBlogs = showBlogs;
-window.showLeads = showLeads;
-window.logout = logout;
-window.resetBlog = resetBlog;
+window.showBlogs     = showBlogs;
+window.showLeads     = showLeads;
+window.logout        = logout;
+window.resetBlog     = resetBlog;
+window.editBlog      = editBlog;
+window.deleteBlog    = deleteBlog;
 
-/* INITIAL */
+/* INITIAL LOAD */
 loadBlogs();
 loadLeads();

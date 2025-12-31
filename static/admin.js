@@ -84,6 +84,26 @@ function showLeads(el){
   loadLeads();
 }
 
+/* EDIT BLOG */
+function editBlog(b){
+  // open blogs section
+  showBlogs(document.querySelectorAll(".sidebar a")[1]);
+
+  // fill form fields
+  blogId.value = b._id || "";
+  title.value = b.title || "";
+
+  // load content inside TinyMCE editor
+  tinymce.get("content").setContent(b.content || "");
+
+  // tags
+  tags.value = Array.isArray(b.tags) ? b.tags.join(",") : (b.tags || "");
+
+  // publish status
+  publish.value = b.isPublished ? "true" : "false";
+}
+
+
 /* LOAD BLOGS */
 async function loadBlogs(){
   try {

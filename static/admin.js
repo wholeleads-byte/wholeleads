@@ -1,4 +1,4 @@
-/* GLOBAL VARS */
+/* GLOBALS */
 const BASE_URL = "https://leads-backend-2piw.onrender.com/api";
 const token = localStorage.getItem("token");
 
@@ -7,7 +7,7 @@ if (!token || token === "undefined") {
   location.href = "adminlogin.html";
 }
 
-/* ⭐ INIT TINYMCE */
+/* EDITOR */
 tinymce.init({
   selector: "#content",
   plugins: "link lists image media table autoresize",
@@ -22,7 +22,7 @@ tinymce.init({
     `data:${blobInfo.blob().type};base64,${blobInfo.base64()}`
 });
 
-/* DOM references */
+/* DOM */
 const dashboardSection = document.getElementById("dashboardSection");
 const blogsSection = document.getElementById("blogsSection");
 const leadsSection = document.getElementById("leadsSection");
@@ -34,7 +34,6 @@ const blogCount = document.getElementById("blogCount");
 const leadList  = document.getElementById("leadList");
 const leadCount = document.getElementById("leadCount");
 
-/* ⭐ MISSING EARLIER — THESE WERE BREAKING SAVE */
 const blogId  = document.getElementById("blogId");
 const title   = document.getElementById("title");
 const tags    = document.getElementById("tags");
@@ -111,64 +110,52 @@ async function loadBlogs(){
   }
 }
 
-/* SAVE BLOG */
+/* SAVE */
 blogForm.addEventListener("submit", async e => {
   e.preventDefault();
 
-  try {
-    const payload = {
-      title: title.value.trim(),
-      content: tinymce.get("content").getContent(),
-      tags: tags.value ? tags.value.split(",").map(t => t.trim()) : [],
-      isPublished: publish.value === "true"
-    };
+  const payload = {
+    title: title.value.trim(),
+    content: tinymce.get("content").getContent(),
+    tags: tags.value ? tags.value.split(",").map(t => t.trim()) : [],
+    isPublished: publish.value === "true"
+  };
 
-    if (!payload.title || !payload.content){
-      alert("Title and content are required");
-      return;
-    }
-
-    if (payload.content.length < 10){
-      alert("Content must be at least 10 characters");
-      return;
-    }
-
-    const method = blogId.value ? "PUT" : "POST";
-    const url = blogId.value
-        ? `${BASE_URL}/blogs/${blogId.value}`
-        : `${BASE_URL}/blogs`;
-
-    const res = await fetch(url, {
-      method,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify(payload)
-    });
-
-    const data = await res.json();
-    console.log("BLOG SAVE RESPONSE:", data);
-
-    if (!res.ok || data.success === false){
-      alert("Blog NOT saved");
-      return;
-    }
-
-    alert("Blog saved successfully 👍");
-    resetBlog();
-    loadBlogs();
-
-  } catch(err){
-    console.error(err);
-    alert("Something went wrong while saving");
+  if (!payload.title || !payload.content){
+    alert("Title and content are required");
+    return;
   }
+
+  const method = blogId.value ? "PUT" : "POST";
+  const url = blogId.value
+      ? `${BASE_URL}/blogs/${blogId.value}`
+      : `${BASE_URL}/blogs`;
+
+  const res = await fetch(url, {
+    method,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify(payload)
+  });
+
+  const data = await res.json();
+  console.log("BLOG SAVE RESPONSE:", data);
+
+  if (!res.ok || data.success === false){
+    alert("Blog NOT saved");
+    return;
+  }
+
+  alert("Blog saved successfully 👍");
+  resetBlog();
+  loadBlogs();
 });
 
-/* EDIT BLOG */
+/* EDIT */
 function editBlog(b){
   showBlogs(document.querySelectorAll(".sidebar a")[1]);
-
   blogId.value = b._id;
   title.value = b.title || "";
   tinymce.get("content").setContent(b.content || "");
@@ -176,33 +163,21 @@ function editBlog(b){
   publish.value = b.isPublished ? "true" : "false";
 }
 
-/* DELETE BLOG */
+/* DELETE */
 async function deleteBlog(id){
   if (!confirm("Delete blog?")) return;
 
-  try {
-    const res = await fetch(`${BASE_URL}/blogs/${id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` }
-    });
+  const res = await fetch(`${BASE_URL}/blogs/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` }
+  });
 
-    const data = await res.json();
-
-    if (!res.ok || data.success === false) {
-      alert("Failed to delete blog");
-      return;
-    }
-
-    alert("Blog deleted successfully 👍");
-    loadBlogs();
-
-  } catch (err) {
-    console.error(err);
-    alert("Something went wrong while deleting");
-  }
+  await res.json();
+  alert("Blog deleted 👍");
+  loadBlogs();
 }
 
-/* RESET FORM */
+/* RESET */
 function resetBlog(){
   blogId.value = "";
   blogForm.reset();
@@ -211,31 +186,23 @@ function resetBlog(){
 
 /* LEADS */
 async function loadLeads(){
-  try {
-    const res = await fetch(`${BASE_URL}/leads`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+  const res = await fetch(`${BASE_URL}/leads`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
 
-    const data = await res.json();
-    const leads = data.leads || data.data || [];
+  const data = await res.json();
+  const leads = data.leads || data.data || [];
 
-    leadCount.innerText = leads.length;
+  leadCount.innerText = leads.length;
 
-    leadList.innerHTML = leads.length
-      ? leads.map(l => `
-        <div class="card mb-2">
-          <div class="card-body">
-            <b>${l.name}</b> (${l.email})<br>
-            ${l.message || ""}
-          </div>
-        </div>
-      `).join("")
-      : "<p>No leads found</p>";
-
-  } catch (e) {
-    console.error(e);
-    leadList.innerHTML = "<p class='text-danger'>Failed to load leads</p>";
-  }
+  leadList.innerHTML = leads.map(l => `
+    <div class="card mb-2">
+      <div class="card-body">
+        <b>${l.name}</b> (${l.email})<br>
+        ${l.message || ""}
+      </div>
+    </div>
+  `).join("");
 }
 
 /* LOGOUT */
@@ -244,6 +211,13 @@ function logout(){
   location.href = "adminlogin.html";
 }
 
-/* INITIAL LOAD */
+/* MAKE FUNCTIONS ACCESSIBLE TO HTML */
+window.showDashboard = showDashboard;
+window.showBlogs = showBlogs;
+window.showLeads = showLeads;
+window.logout = logout;
+window.resetBlog = resetBlog;
+
+/* INITIAL */
 loadBlogs();
 loadLeads();

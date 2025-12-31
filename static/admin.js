@@ -101,7 +101,7 @@ async function loadBlogs(){
         <div class="card mb-2">
           <div class="card-body">
             <h5>${b.title}</h5>
-            <p>${(b.content || "").substring(0,120)}...</p>
+            <div>${b.content}</div>
 
             <button class="btn btn-warning btn-sm"
               onclick='editBlog(${JSON.stringify(b)})'>Edit</button>

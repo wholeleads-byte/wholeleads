@@ -14,26 +14,26 @@ tinymce.init({
   menubar: false,
   branding: false,
 
+  automatic_uploads: true,
+
   /* ⭐ CLOUDINARY IMAGE UPLOAD ⭐ */
-images_upload_handler: async (blobInfo, success, failure) => {
-  try {
+  images_upload_handler: async (blobInfo) => {
     const form = new FormData();
     form.append("file", blobInfo.blob());
-    form.append("upload_preset", "blogs_upload");
+    form.append("upload_preset", "blogs_upload");   // your preset name
 
     const res = await fetch(
-      "https://api.cloudinary.com/v1_1/dnfdijaa3/image/upload",
-      { method: "POST", body: form }
+      "https://api.cloudinary.com/v1_1/dnfdijaa3/image/upload", // 👈 your cloud name
+      {
+        method: "POST",
+        body: form
+      }
     );
 
     const data = await res.json();
-
-    success(data.secure_url);   // 👈 force TinyMCE to use real URL
-  } catch (err) {
-    failure("Upload failed");
+    return data.secure_url;    // TinyMCE will insert this URL
   }
-}
-
+});
 
 /* DOM refs */
 const dashboardSection = document.getElementById("dashboardSection");

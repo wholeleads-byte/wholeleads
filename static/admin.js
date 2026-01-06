@@ -21,7 +21,7 @@ tinymce.init({
     const widget = cloudinary.createUploadWidget(
       {
         cloudName: "dnfdijaa3",
-        uploadPreset: "blogs_upload"      // 👈 yahin par naya preset bhi de sakte ho
+        uploadPreset: "unsigned_blog"   // 👈 USE THIS (unsigned preset)
       },
       (error, result) => {
         if (!error && result && result.event === "success") {
@@ -91,7 +91,7 @@ async function loadBlogs(){
     });
 
     const data = await res.json();
-    const blogs = data.data || [];
+    const blogs = (data && data.data) || [];
 
     blogCount.innerText = blogs.length;
 

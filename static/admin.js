@@ -20,7 +20,7 @@ tinymce.init({
   file_picker_callback: function (cb) {
     const widget = cloudinary.createUploadWidget(
       {
-        cloudName: "dnfdijaa3",
+        cloudName: "dnfidjaa3",
         uploadPreset: "unsigned_blog"   // 👈 USE THIS (unsigned preset)
       },
       (error, result) => {

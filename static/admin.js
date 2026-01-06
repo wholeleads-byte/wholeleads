@@ -7,20 +7,24 @@ if (!token || token === "undefined") {
   location.href = "adminlogin.html";
 }
 
-/* TINYMCE */
-tinymce.init({
+/* TINYMCE */tinymce.init({
   selector: "#content",
+
   plugins: "image link media table lists autoresize",
+
+  // ⭐ force toolbar buttons to show
+  toolbar:
+    "undo redo | blocks | bold italic underline | bullist numlist | alignleft aligncenter alignright | image link media",
+
   menubar: false,
   branding: false,
   automatic_uploads: true,
 
-  /* ⭐ CLOUDINARY IMAGE UPLOAD — FINAL ⭐ */
   images_upload_handler: async (blobInfo, success, failure) => {
     try {
       const form = new FormData();
       form.append("file", blobInfo.blob());
-      form.append("upload_preset", "blogs_upload");      // your preset
+      form.append("upload_preset", "blogs_upload");
 
       const res = await fetch(
         "https://api.cloudinary.com/v1_1/dnfdijaa3/image/upload",
@@ -28,8 +32,6 @@ tinymce.init({
       );
 
       const data = await res.json();
-
-      // 🔥 Replace blob: URL with real Cloudinary URL
       success(data.secure_url);
     } catch (err) {
       console.error(err);
@@ -37,6 +39,7 @@ tinymce.init({
     }
   }
 });
+
 
 /* DOM refs */
 const dashboardSection = document.getElementById("dashboardSection");

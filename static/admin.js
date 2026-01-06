@@ -34,6 +34,22 @@ tinymce.init({
   }
 });
 
+file_picker_callback: function (cb) {
+  const widget = cloudinary.createUploadWidget(
+    {
+      cloudName: "dnfdijaa3",
+      uploadPreset: "unsigned_blog"
+    },
+    (error, result) => {
+      if (!error && result && result.event === "success") {
+        cb(result.info.secure_url, { alt: result.info.original_filename });
+      }
+    }
+  );
+
+  widget.open();
+}
+
 /* DOM refs */
 const dashboardSection = document.getElementById("dashboardSection");
 const blogsSection = document.getElementById("blogsSection");

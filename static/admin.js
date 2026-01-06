@@ -11,40 +11,14 @@ if (!token || token === "undefined") {
 tinymce.init({
   selector: "#content",
 
-  plugins: "image link media table lists autoresize",
-  toolbar:
-    "undo redo | blocks | bold italic underline | bullist numlist | alignleft aligncenter alignright | image link media",
-
+  plugins: "image link lists media table autoresize",
   menubar: false,
-  branding: false,
+
+  toolbar:
+    "undo redo | bold italic underline | bullist numlist | image link",
+
   automatic_uploads: true,
-
-  /* 👇👇 ADD THIS */
-  file_picker_types: "image",
-
-  file_picker_callback: (cb) => {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "image/*";
-
-    input.onchange = async () => {
-      const file = input.files[0];
-      const form = new FormData();
-      form.append("file", file);
-      form.append("upload_preset", "blogs_upload");
-
-      const res = await fetch(
-        "https://api.cloudinary.com/v1_1/dnfdijaa3/image/upload",
-        { method: "POST", body: form }
-      );
-
-      const data = await res.json();
-
-      cb(data.secure_url, { alt: file.name });
-    };
-
-    input.click();
-  },
+  paste_data_images: true,
 
   images_upload_handler: async (blobInfo, success, failure) => {
     try {
@@ -58,15 +32,15 @@ tinymce.init({
       );
 
       const data = await res.json();
+
+      // 👉 TinyMCE ko real image URL de do
       success(data.secure_url);
-    } catch (err) {
-      console.error(err);
+    } catch (e) {
+      console.error(e);
       failure("Upload failed");
     }
   }
 });
-
-
 
 /* DOM refs */
 const dashboardSection = document.getElementById("dashboardSection");

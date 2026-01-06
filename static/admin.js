@@ -7,14 +7,14 @@ if (!token || token === "undefined") {
   location.href = "adminlogin.html";
 }
 
-/* TINYMCE */tinymce.init({
+/* TINYMCE */
+tinymce.init({
   selector: "#content",
 
   plugins: "image link media table lists autoresize",
 
-  // ⭐ force toolbar buttons to show
   toolbar:
-    "undo redo | blocks | bold italic underline | bullist numlist | alignleft aligncenter alignright | image link media",
+    "undo redo | blocks | bold italic underline | bullist numlist | alignleft aligncenter alignright | image link media table",
 
   menubar: false,
   branding: false,

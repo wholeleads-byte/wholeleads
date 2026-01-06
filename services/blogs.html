@@ -1,18 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
 <title>Blogs | WholeLeads</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="blogs.css">
+
+<style>
+.blog-content img{
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+.card{
+  overflow: hidden;
+}
+</style>
 </head>
 
 <body>
 
 <div class="container py-5">
   <h1 class="text-center mb-5">Latest Blogs</h1>
+
   <div class="row" id="blogsContainer"></div>
 </div>
 
@@ -27,38 +38,33 @@ async function loadBlogs() {
     const res = await fetch(`${BASE_URL}/blogs`);
     const data = await res.json();
 
-    console.log("API RESPONSE ===>", data);
-
-    // ✔ blogs actually data.data me aa rahe hain
-    const blogs = (data.data || []).filter(b => b.isPublished === true);
+    const blogs = (data.data || []).filter(b => b.isPublished);
 
     if (!blogs.length) {
       container.innerHTML = "<p class='text-center'>No blogs found</p>";
       return;
     }
 
-    container.innerHTML = blogs
-      .map(
-        (b) => `
-        <div class="col-md-4 mb-4">
-          <div class="card h-100 shadow-sm">
-            <div class="card-body">
-              <h5 class="card-title">${b.title}</h5>
-              <p class="card-text">
-                ${(b.content || "").substring(0,150)}...
-              </p>
+    container.innerHTML = blogs.map(b => `
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm p-3">
 
-              <a href="blog-detail.html?id=${b._id}" class="btn btn-primary btn-sm">
-                Read More
-              </a>
-            </div>
+          <h5>${b.title}</h5>
+
+          <div class="blog-content mt-2">
+            ${b.content}
           </div>
+
+          <a href="blog-detail.html?id=${b._id}" class="btn btn-primary btn-sm mt-3">
+            Read More
+          </a>
+
         </div>
-      `
-      )
-      .join("");
+      </div>
+    `).join("");
+
   } catch (err) {
-    console.error("Error loading blogs:", err);
+    console.error(err);
     container.innerHTML =
       "<p class='text-danger text-center'>Failed to load blogs</p>";
   }
@@ -69,3 +75,4 @@ loadBlogs();
 
 </body>
 </html>
+

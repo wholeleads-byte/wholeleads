@@ -14,3 +14,8 @@
   line-height: 1.7;
   font-size: 16px;
 }
+.blog-content img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}

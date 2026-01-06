@@ -13,7 +13,7 @@ tinymce.init({
   plugins: "image link lists media table autoresize",
   menubar: false,
 
-  toolbar: "undo redo | bold italic underline | bullist numlist | image",
+  toolbar: "undo redo | bold italic underline | bullist numlist | image link",
 
   file_picker_types: "image",
 
@@ -21,7 +21,7 @@ tinymce.init({
     const widget = cloudinary.createUploadWidget(
       {
         cloudName: "dnfdijaa3",
-        uploadPreset: "blogs_upload"
+        uploadPreset: "blogs_upload"      // 👈 yahin par naya preset bhi de sakte ho
       },
       (error, result) => {
         if (!error && result && result.event === "success") {
@@ -33,22 +33,6 @@ tinymce.init({
     widget.open();
   }
 });
-
-file_picker_callback: function (cb) {
-  const widget = cloudinary.createUploadWidget(
-    {
-      cloudName: "dnfdijaa3",
-      uploadPreset: "unsigned_blog"
-    },
-    (error, result) => {
-      if (!error && result && result.event === "success") {
-        cb(result.info.secure_url, { alt: result.info.original_filename });
-      }
-    }
-  );
-
-  widget.open();
-}
 
 /* DOM refs */
 const dashboardSection = document.getElementById("dashboardSection");
@@ -180,7 +164,7 @@ blogForm.addEventListener("submit", async e => {
   loadBlogs();
 });
 
-/* EDIT BLOG (single correct function) */
+/* EDIT BLOG */
 function editBlog(b){
   showBlogs(document.querySelectorAll(".sidebar a")[1]);
 

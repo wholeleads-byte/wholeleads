@@ -186,23 +186,6 @@
                                 <a href="services/Seo.html"><i class="fas fa-users"></i></a>
                             </div>
                         </div>
-
-                        <script>
-                            const items = document.querySelectorAll(".circle-item");
-                            const centerText = document.getElementById("centerText");
-                            const defaultText = centerText.innerHTML;
-
-                            items.forEach(item => {
-                                item.addEventListener("mouseenter", () => {
-                                    const content = item.getAttribute("data-content");
-                                    centerText.innerHTML = content;
-                                });
-
-                                item.addEventListener("mouseleave", () => {
-                                    centerText.innerHTML = defaultText;
-                                });
-                            });
-                        </script>
                     </div>
                 </div>
             </div>
@@ -658,24 +641,8 @@
             </div>
 
         </div>
-        <script>
-            document.getElementById('callUs').addEventListener('click', function (e) {
-                e.preventDefault();
-                var phoneNumber = "+917814007003";
-
-                var isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|Mobile/i.test(navigator.userAgent);
-
-                if (isMobile) {
-                    window.location.href = "tel:" + phoneNumber;
-                } else {
-
-                    alert("Call us at: " + phoneNumber);
-                }
-            });
-        </script>
-
-
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- EXTERNAL JS FILE -->
+<script src="js/wholeleadsmain.js"></script>
 </body>
 
 </html>

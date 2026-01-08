@@ -652,6 +652,16 @@
     document.getElementById("siteLogo").src = "/MAINLOGO/Whole-leads-main-logo.png";
   }
 </script>
+<script>
+  document.getElementById("footerEmail").innerText =
+    localStorage.getItem("footerEmail") || "support@wholeleads.com";
+
+  document.getElementById("footerPhone").innerText =
+    localStorage.getItem("footerPhone") || "+91 7814007003";
+
+  document.getElementById("footerAddress").innerText =
+    localStorage.getItem("footerAddress") || "Santa Clara, US";
+</script>
 
 </body>
 

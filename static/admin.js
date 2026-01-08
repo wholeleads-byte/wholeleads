@@ -234,3 +234,30 @@ window.deleteBlog    = deleteBlog;
 /* INITIAL LOAD */
 loadBlogs();
 loadLeads();
+
+function showSettings(el) {
+  hideAll();
+  document.getElementById("settingsSection").style.display = "block";
+  setActive(el);
+}
+
+/* LOGO UPDATE */
+function updateLogo() {
+  const file = document.getElementById("logoInput").files[0];
+  if (!file) return alert("Please select a logo");
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    localStorage.setItem("siteLogo", reader.result);
+    alert("Logo updated successfully");
+  };
+  reader.readAsDataURL(file);
+}
+
+/* FOOTER UPDATE */
+function updateFooter() {
+  localStorage.setItem("footerEmail", document.getElementById("footerEmail").value);
+  localStorage.setItem("footerPhone", document.getElementById("footerPhone").value);
+  localStorage.setItem("footerAddress", document.getElementById("footerAddress").value);
+  alert("Footer details updated");
+}

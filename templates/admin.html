@@ -18,6 +18,7 @@
   <a href="#" class="active" onclick="showDashboard(this)">Dashboard</a>
   <a href="#" onclick="showBlogs(this)">Blogs</a>
   <a href="#" onclick="showLeads(this)">Leads</a>
+  <a href="#" onclick="showSettings(this)">Settings</a>
   <a href="#" onclick="logout()">Logout</a>
 </div>
 
@@ -71,6 +72,28 @@
     <h2>Leads</h2>
     <div id="leadList"></div>
   </div>
+
+  <div id="settingsSection" style="display:none;">
+  <h2>Site Settings</h2>
+
+  <!-- LOGO UPDATE -->
+  <div class="card p-3 mb-4">
+    <h5>Update Website Logo</h5>
+    <input type="file" id="logoInput" class="form-control mb-2">
+    <button class="btn btn-primary" onclick="updateLogo()">Update Logo</button>
+  </div>
+
+  <!-- FOOTER CONTACT DETAILS -->
+  <div class="card p-3">
+    <h5>Footer Contact Details</h5>
+
+    <input id="footerEmail" class="form-control mb-2" placeholder="Email">
+    <input id="footerPhone" class="form-control mb-2" placeholder="Phone">
+    <input id="footerAddress" class="form-control mb-2" placeholder="Address">
+
+    <button class="btn btn-success" onclick="updateFooter()">Save Footer Details</button>
+  </div>
+</div>
 
 </div>
 

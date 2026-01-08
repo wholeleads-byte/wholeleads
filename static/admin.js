@@ -12,8 +12,31 @@ tinymce.init({
   selector: "#content",
   plugins: "image link lists media table autoresize",
   menubar: false,
-  toolbar: "undo redo | bold italic | bullist numlist | image link",
+
+  toolbar:
+    "undo redo | bold italic underline | bullist numlist | image link",
+
+  file_picker_types: "image",
+
+  file_picker_callback: function (cb) {
+    const widget = cloudinary.createUploadWidget(
+      {
+        cloudName: "dnfidjaa3",
+        uploadPreset: "unsigned_blog" // 🔥 SAME AS BEFORE
+      },
+      (error, result) => {
+        if (!error && result && result.event === "success") {
+          cb(result.info.secure_url, {
+            alt: result.info.original_filename
+          });
+        }
+      }
+    );
+
+    widget.open();
+  }
 });
+
 
 /* ================= DOM ================= */
 const dashboardSection = document.getElementById("dashboardSection");

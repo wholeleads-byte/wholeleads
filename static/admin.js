@@ -1,12 +1,3 @@
-function hideAll() {
-  document.getElementById("dashboardSection").style.display = "none";
-  document.getElementById("blogsSection").style.display = "none";
-  document.getElementById("leadsSection").style.display = "none";
-
-  const settings = document.getElementById("settingsSection");
-  if (settings) settings.style.display = "none";
-}
-
 /* GLOBALS */
 const BASE_URL = "https://leads-backend-2piw.onrender.com/api";
 const token = localStorage.getItem("token");
@@ -270,3 +261,25 @@ function updateFooter() {
   localStorage.setItem("footerAddress", document.getElementById("footerAddress").value);
   alert("Footer details updated");
 }
+function hideAll() {
+  document.getElementById("dashboardSection").style.display = "none";
+  document.getElementById("blogsSection").style.display = "none";
+  document.getElementById("leadsSection").style.display = "none";
+
+  const settings = document.getElementById("settingsSection");
+  if (settings) settings.style.display = "none";
+}
+
+function setActive(el) {
+  document.querySelectorAll(".sidebar a").forEach(a => {
+    a.classList.remove("active");
+  });
+  el.classList.add("active");
+}
+
+function showSettings(el) {
+  hideAll();
+  document.getElementById("settingsSection").style.display = "block";
+  setActive(el);
+}
+

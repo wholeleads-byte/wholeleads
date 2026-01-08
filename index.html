@@ -643,6 +643,15 @@
         </div>
 <!-- EXTERNAL JS FILE -->
 <script src="/wholeleadsmain.js"></script>
+        <script>
+  const logo = localStorage.getItem("siteLogo");
+  if (logo) {
+    document.getElementById("siteLogo").src = logo;
+  } else {
+    document.getElementById("siteLogo").src = "/MAINLOGO/Whole-leads-main-logo.png";
+  }
+</script>
+
 </body>
 
 </html>

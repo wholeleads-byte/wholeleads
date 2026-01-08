@@ -1,6 +1,28 @@
 html {
   scroll-behavior: smooth;
 }
+/* SERVICES DROPDOWN */
+.navbar .dropdown:hover .dropdown-menu {
+  display: block;
+  margin-top: 0;
+}
+
+.dropdown-menu {
+  border-radius: 10px;
+  padding: 10px 0;
+  border: none;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+}
+
+.dropdown-item {
+  font-size: 14px;
+  padding: 10px 20px;
+}
+
+.dropdown-item:hover {
+  background-color: #f5f5f5;
+  color: #8BC53F; /* WholeLeads green */
+}
 
 * {
   margin: 0;

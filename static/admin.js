@@ -1,3 +1,12 @@
+function hideAll() {
+  document.getElementById("dashboardSection").style.display = "none";
+  document.getElementById("blogsSection").style.display = "none";
+  document.getElementById("leadsSection").style.display = "none";
+
+  const settings = document.getElementById("settingsSection");
+  if (settings) settings.style.display = "none";
+}
+
 /* GLOBALS */
 const BASE_URL = "https://leads-backend-2piw.onrender.com/api";
 const token = localStorage.getItem("token");

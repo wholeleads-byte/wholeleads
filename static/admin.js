@@ -185,13 +185,14 @@ async function loadLeads() {
 /* ---------- SETTINGS ---------- */
 function saveSettings() {
 
-  const settings = {
-    logo: siteLogo.value,
-    email: siteEmail.value,
-    phone: sitePhone.value
+  const data = {
+    logo: document.getElementById("siteLogo").value,
+    email: document.getElementById("siteEmail").value,
+    phone: document.getElementById("sitePhone").value,
+    address: document.getElementById("siteAddress").value
   };
 
-  localStorage.setItem("siteSettings", JSON.stringify(settings));
+  localStorage.setItem("siteSettings", JSON.stringify(data));
 
   alert("Settings saved successfully ✅");
 }
@@ -203,10 +204,19 @@ function loadSettings() {
 
   const data = JSON.parse(saved);
 
-  siteLogo.value = data.logo || "";
-  siteEmail.value = data.email || "";
-  sitePhone.value = data.phone || "";
+  document.getElementById("siteLogo").value = data.logo || "";
+  document.getElementById("siteEmail").value = data.email || "";
+  document.getElementById("sitePhone").value = data.phone || "";
+  document.getElementById("siteAddress").value = data.address || "";
 }
+
+/* IMPORTANT */
+function showSettings() {
+  hideAll();
+  settingsSection.style.display = "block";
+  loadSettings();
+}
+
 
 /* ---------- LOGOUT ---------- */
 function logout() {

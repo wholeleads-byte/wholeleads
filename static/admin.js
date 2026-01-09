@@ -142,7 +142,7 @@ async function editBlog(id) {
   });
 
   const json = await res.json();
-  const blog = json.data;   // 🔥 FIXED
+  const blog = json.data;
 
   document.getElementById("blogId").value = id;
   titleInput.value = blog.title;
@@ -184,16 +184,28 @@ async function loadLeads() {
 
 /* ---------- SETTINGS ---------- */
 function saveSettings() {
-  localStorage.setItem("logo", siteLogo.value);
-  localStorage.setItem("email", siteEmail.value);
-  localStorage.setItem("phone", sitePhone.value);
-  alert("Settings saved ✅");
+
+  const settings = {
+    logo: siteLogo.value,
+    email: siteEmail.value,
+    phone: sitePhone.value
+  };
+
+  localStorage.setItem("siteSettings", JSON.stringify(settings));
+
+  alert("Settings saved successfully ✅");
 }
 
 function loadSettings() {
-  siteLogo.value = localStorage.getItem("logo") || "";
-  siteEmail.value = localStorage.getItem("email") || "";
-  sitePhone.value = localStorage.getItem("phone") || "";
+
+  const saved = localStorage.getItem("siteSettings");
+  if (!saved) return;
+
+  const data = JSON.parse(saved);
+
+  siteLogo.value = data.logo || "";
+  siteEmail.value = data.email || "";
+  sitePhone.value = data.phone || "";
 }
 
 /* ---------- LOGOUT ---------- */
@@ -204,4 +216,5 @@ function logout() {
 
 /* ---------- INIT ---------- */
 showDashboard();
+
 

@@ -8,9 +8,8 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="../static/wholeadmin.css">
 
-<!-- TinyMCE -->
-<script src="https://cdn.jsdelivr.net/npm/tinymce@6.7.0/tinymce.min.js"></script>
 <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tinymce@6/tinymce.min.js"></script>
 </head>
 
 <body>
@@ -20,49 +19,71 @@
   <a href="#" class="active" onclick="showDashboard(this)">Dashboard</a>
   <a href="#" onclick="showBlogs(this)">Blogs</a>
   <a href="#" onclick="showLeads(this)">Leads</a>
+  <a href="#" onclick="showSettings(this)">Settings</a>
   <a href="#" onclick="logout()">Logout</a>
 </div>
 
 <div class="main-content">
 
-  <div id="dashboardSection">
-    <h2>Welcome Admin 👋</h2>
-    <h5>Total Blogs: <span id="blogCount">0</span></h5>
+<!-- DASHBOARD -->
+<div id="dashboardSection">
+  <h2>Welcome Admin 👋</h2>
+  <div class="row mt-3">
+    <div class="col-md-4">
+      <div class="card-box">
+        <h5>Total Blogs</h5>
+        <h2 id="blogCount">0</h2>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card-box">
+        <h5>Total Leads</h5>
+        <h2 id="leadCount">0</h2>
+      </div>
+    </div>
   </div>
+</div>
 
-  <!-- BLOGS -->
-  <div id="blogsSection" style="display:none;">
-    <h2>Blogs</h2>
+<!-- BLOGS -->
+<div id="blogsSection" style="display:none;">
+  <h2>Blogs</h2>
 
-    <form id="blogForm" class="mb-4">
-      <input type="hidden" id="blogId">
+  <form id="blogForm" class="mb-3">
+    <input type="hidden" id="blogId">
 
-      <input id="title" class="form-control mb-2" placeholder="Title" required>
+    <input id="title" class="form-control mb-2" placeholder="Blog Title" required>
 
-      <textarea id="content"></textarea>
+    <textarea id="content"></textarea>
 
-      <input id="tags" class="form-control my-2" placeholder="Tags (comma separated)">
+    <input id="tags" class="form-control mt-2" placeholder="Tags (comma separated)">
 
-      <select id="publish" class="form-control mb-2">
-        <option value="true">Publish</option>
-        <option value="false">Draft</option>
-      </select>
+    <select id="publish" class="form-control mt-2">
+      <option value="published">Publish</option>
+      <option value="draft">Draft</option>
+    </select>
 
-      <button class="btn btn-primary">Save Blog</button>
-      <button type="button" class="btn btn-secondary" onclick="resetBlog()">Cancel</button>
-    </form>
+    <button class="btn btn-primary mt-2">Save Blog</button>
+    <button type="button" class="btn btn-secondary mt-2" onclick="resetBlog()">Cancel</button>
+  </form>
 
-    <div id="blogList"></div>
-  </div>
+  <div id="blogList"></div>
+</div>
 
-  <!-- LEADS -->
-  <div id="leadsSection" style="display:none;">
-    <h2>Leads</h2>
-    <div id="leadList"></div>
-  </div>
+<!-- LEADS -->
+<div id="leadsSection" style="display:none;">
+  <h2>Leads</h2>
+  <div id="leadList"></div>
+</div>
+
+<!-- SETTINGS -->
+<div id="settingsSection" style="display:none;">
+  <h2>Site Settings</h2>
+  <p>Settings unchanged 👍</p>
+</div>
 
 </div>
 
 <script src="../static/admin.js"></script>
 </body>
 </html>
+

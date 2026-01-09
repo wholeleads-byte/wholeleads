@@ -3,27 +3,15 @@ const token = localStorage.getItem("token");
 
 if (!token) location.href = "adminlogin.html";
 
-/* ---------- DOM ---------- */
-const dashboardSection = document.getElementById("dashboardSection");
-const blogsSection = document.getElementById("blogsSection");
-const leadsSection = document.getElementById("leadsSection");
-const settingsSection = document.getElementById("settingsSection");
-
-const blogForm = document.getElementById("blogForm");
-const blogList = document.getElementById("blogList");
-const blogCount = document.getElementById("blogCount");
-
-const titleInput = document.getElementById("title");
-const tagsInput = document.getElementById("tags");
-const leadList = document.getElementById("leadList");
-
-/* ---------- TinyMCE ---------- */
+/* ---------- TINYMCE ---------- */
 tinymce.init({
   selector: "#content",
-  apiKey: "YOUR_API_KEY_HERE",
   height: 350,
   plugins: "image link lists",
-  toolbar: "undo redo | bold italic underline | bullist numlist | image link",
+  toolbar:
+    "undo redo | formatselect | bold italic underline | " +
+    "alignleft aligncenter alignright | " +
+    "bullist numlist | image link",
   menubar: false,
 
   file_picker_callback: function(cb) {
@@ -38,6 +26,20 @@ tinymce.init({
     widget.open();
   }
 });
+
+/* ---------- DOM ---------- */
+const dashboardSection = document.getElementById("dashboardSection");
+const blogsSection = document.getElementById("blogsSection");
+const leadsSection = document.getElementById("leadsSection");
+const settingsSection = document.getElementById("settingsSection");
+
+const blogForm = document.getElementById("blogForm");
+const blogList = document.getElementById("blogList");
+const blogCount = document.getElementById("blogCount");
+
+const titleInput = document.getElementById("title");
+const tagsInput = document.getElementById("tags");
+const leadList = document.getElementById("leadList");
 
 /* ---------- Helpers ---------- */
 function hideAll() {
@@ -98,7 +100,7 @@ blogForm.addEventListener("submit", async e => {
 
   const title = titleInput.value.trim();
   const content = tinymce.get("content").getContent();
-  const tags = tagsInput.value.split(",").map(t => t.trim()).filter(Boolean);
+  const tags = tagsInput.value.split(",").map(t => t.trim());
 
   if (!title || !content) {
     alert("Title & content required");
@@ -107,7 +109,7 @@ blogForm.addEventListener("submit", async e => {
 
   const payload = { title, content, tags };
 
-  const res = await fetch(`${BASE_URL}/blogs`, {
+  await fetch(`${BASE_URL}/blogs`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -115,11 +117,6 @@ blogForm.addEventListener("submit", async e => {
     },
     body: JSON.stringify(payload)
   });
-
-  if (!res.ok) {
-    alert("Blog save failed");
-    return;
-  }
 
   alert("Blog saved ✅");
   resetBlog();
@@ -152,38 +149,18 @@ async function loadLeads() {
   ).join("");
 }
 
-/* ---------- SETTINGS ---------- */
-async function saveSettings() {
-  const logo = document.getElementById("siteLogo").value;
-  const email = document.getElementById("siteEmail").value;
-  const phone = document.getElementById("sitePhone").value;
-
-  const payload = { logo, email, phone };
-
-  const res = await fetch(`${BASE_URL}/settings`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
-    },
-    body: JSON.stringify(payload)
-  });
-
-  if (!res.ok) {
-    alert("Settings save failed ❌");
-    return;
-  }
-
-  alert("Settings updated on website ✅");
+/* ---------- SETTINGS (LOCAL) ---------- */
+function saveSettings() {
+  localStorage.setItem("logo", siteLogo.value);
+  localStorage.setItem("email", siteEmail.value);
+  localStorage.setItem("phone", sitePhone.value);
+  alert("Settings saved ✅");
 }
 
-async function loadSettings() {
-  const res = await fetch(`${BASE_URL}/settings`);
-  const data = await res.json();
-
-  document.getElementById("siteLogo").value = data.logo || "";
-  document.getElementById("siteEmail").value = data.email || "";
-  document.getElementById("sitePhone").value = data.phone || "";
+function loadSettings() {
+  siteLogo.value = localStorage.getItem("logo") || "";
+  siteEmail.value = localStorage.getItem("email") || "";
+  sitePhone.value = localStorage.getItem("phone") || "";
 }
 
 /* ---------- LOGOUT ---------- */

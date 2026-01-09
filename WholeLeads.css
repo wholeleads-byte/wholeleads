@@ -862,3 +862,9 @@ a:hover {
   color: #fff;
 }
 
+/* Mobile button spacing */
+@media (max-width: 768px) {
+  .navbar .d-flex {
+    gap: 10px;   /* yahan space control karo */
+  }
+}

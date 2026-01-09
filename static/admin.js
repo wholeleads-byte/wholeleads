@@ -5,28 +5,20 @@ if (!token) {
   location.href = "adminlogin.html";
 }
 
-/* SLUG */
-function generateSlug(text) {
-  return text.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-");
-}
-
-/* TINYMCE */
+/* ---------- TinyMCE ---------- */
 tinymce.init({
   selector: "#content",
   height: 350,
   plugins: "image link lists",
-  menubar: false,
   toolbar: "undo redo | bold italic | bullist numlist | image link",
-  file_picker_types: "image",
+  menubar: false,
+
   file_picker_callback: function (cb) {
     const widget = cloudinary.createUploadWidget(
-      {
-        cloudName: "dnfidjaa3",
-        uploadPreset: "unsigned_blog"
-      },
-      (error, result) => {
-        if (!error && result.event === "success") {
-          cb(result.info.secure_url);
+      { cloudName: "dnfidjaa3", uploadPreset: "unsigned_blog" },
+      (err, res) => {
+        if (!err && res.event === "success") {
+          cb(res.info.secure_url);
         }
       }
     );
@@ -34,55 +26,54 @@ tinymce.init({
   }
 });
 
-/* SECTIONS */
-const dashboardSection = document.getElementById("dashboardSection");
-const blogsSection = document.getElementById("blogsSection");
-const leadsSection = document.getElementById("leadsSection");
+/* ---------- Helpers ---------- */
+function slugify(text) {
+  return text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
 
-const blogForm = document.getElementById("blogForm");
-const blogList = document.getElementById("blogList");
-const blogCount = document.getElementById("blogCount");
-
-/* NAV */
 function hideAll() {
   dashboardSection.style.display = "none";
   blogsSection.style.display = "none";
   leadsSection.style.display = "none";
+  settingsSection.style.display = "none";
 }
 
-function setActive(el) {
-  document.querySelectorAll(".sidebar a").forEach(a => a.classList.remove("active"));
-  el.classList.add("active");
-}
-
+/* ---------- Navigation ---------- */
 function showDashboard(el) {
   hideAll();
   dashboardSection.style.display = "block";
-  setActive(el);
   loadBlogs();
+  loadLeads();
 }
 
 function showBlogs(el) {
   hideAll();
   blogsSection.style.display = "block";
-  setActive(el);
   loadBlogs();
 }
 
 function showLeads(el) {
   hideAll();
   leadsSection.style.display = "block";
-  setActive(el);
   loadLeads();
 }
 
-/* BLOGS */
+function showSettings(el) {
+  hideAll();
+  settingsSection.style.display = "block";
+}
+
+/* ---------- BLOGS ---------- */
+const blogForm = document.getElementById("blogForm");
+const blogList = document.getElementById("blogList");
+const blogCount = document.getElementById("blogCount");
+
 async function loadBlogs() {
   const res = await fetch(`${BASE_URL}/blogs`, {
     headers: { Authorization: `Bearer ${token}` }
   });
-  const data = await res.json();
-  const blogs = data.data || [];
+  const json = await res.json();
+  const blogs = json.data || [];
 
   blogCount.innerText = blogs.length;
 
@@ -90,27 +81,22 @@ async function loadBlogs() {
     <div class="card mb-2">
       <div class="card-body">
         <h5>${b.title}</h5>
-        <button class="btn btn-sm btn-warning me-2"
-          onclick='editBlog(${JSON.stringify(b)})'>Edit</button>
-        <button class="btn btn-sm btn-danger"
-          onclick="deleteBlog('${b._id}')">Delete</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteBlog('${b._id}')">Delete</button>
       </div>
     </div>
   `).join("");
 }
 
-/* SAVE / UPDATE */
 blogForm.addEventListener("submit", async e => {
   e.preventDefault();
 
-  const blogId = blogForm.blogId.value;
-  const title = titleInput.value || document.getElementById("title").value;
+  const title = titleInput.value.trim();
   const content = tinymce.get("content").getContent();
-  const tags = document.getElementById("tags").value.split(",");
-  const publish = document.getElementById("publish").value === "true";
+  const tags = tagsInput.value.split(",").map(t => t.trim()).filter(Boolean);
+  const status = publish.value;
 
   if (!title || !content) {
-    alert("Title & Content required");
+    alert("Title & content required");
     return;
   }
 
@@ -118,16 +104,12 @@ blogForm.addEventListener("submit", async e => {
     title,
     content,
     tags,
-    slug: generateSlug(title),
-    status: publish ? "published" : "draft",
-    author: "Admin"
+    slug: slugify(title),
+    status
   };
 
-  const url = blogId ? `${BASE_URL}/blogs/${blogId}` : `${BASE_URL}/blogs`;
-  const method = blogId ? "PUT" : "POST";
-
-  const res = await fetch(url, {
-    method,
+  const res = await fetch(`${BASE_URL}/blogs`, {
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`
@@ -135,27 +117,19 @@ blogForm.addEventListener("submit", async e => {
     body: JSON.stringify(payload)
   });
 
+  const data = await res.json();
+
   if (!res.ok) {
-    alert("Validation error");
+    console.error(data);
+    alert("Validation error (backend)");
     return;
   }
 
-  alert("Blog Saved ✅");
+  alert("Blog saved ✅");
   resetBlog();
   loadBlogs();
 });
 
-/* EDIT */
-function editBlog(blog) {
-  blogForm.blogId.value = blog._id;
-  document.getElementById("title").value = blog.title;
-  tinymce.get("content").setContent(blog.content);
-  document.getElementById("tags").value = blog.tags?.join(",") || "";
-  document.getElementById("publish").value =
-    blog.status === "published" ? "true" : "false";
-}
-
-/* DELETE */
 async function deleteBlog(id) {
   if (!confirm("Delete blog?")) return;
   await fetch(`${BASE_URL}/blogs/${id}`, {
@@ -165,27 +139,39 @@ async function deleteBlog(id) {
   loadBlogs();
 }
 
-/* RESET */
 function resetBlog() {
   blogForm.reset();
-  blogForm.blogId.value = "";
   tinymce.get("content").setContent("");
 }
 
-/* LEADS */
+/* ---------- LEADS ---------- */
 async function loadLeads() {
   const res = await fetch(`${BASE_URL}/leads`, {
     headers: { Authorization: `Bearer ${token}` }
   });
-  const data = await res.json();
-  leadsSection.innerHTML = JSON.stringify(data.data || []);
+  const json = await res.json();
+  leadList.innerHTML = (json.data || []).map(l =>
+    `<div class="card mb-2"><div class="card-body">${l.email}</div></div>`
+  ).join("");
 }
 
-/* LOGOUT */
+/* ---------- LOGOUT ---------- */
 function logout() {
   localStorage.clear();
   location.href = "adminlogin.html";
 }
 
-/* DEFAULT */
-showDashboard(document.querySelector(".sidebar a.active"));
+/* ---------- DOM ---------- */
+const dashboardSection = document.getElementById("dashboardSection");
+const blogsSection = document.getElementById("blogsSection");
+const leadsSection = document.getElementById("leadsSection");
+const settingsSection = document.getElementById("settingsSection");
+
+const titleInput = document.getElementById("title");
+const tagsInput = document.getElementById("tags");
+const publish = document.getElementById("publish");
+const leadList = document.getElementById("leadList");
+
+/* ---------- Init ---------- */
+showDashboard();
+

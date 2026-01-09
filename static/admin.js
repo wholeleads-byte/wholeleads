@@ -210,14 +210,6 @@ function loadSettings() {
   document.getElementById("siteAddress").value = data.address || "";
 }
 
-/* IMPORTANT */
-function showSettings() {
-  hideAll();
-  settingsSection.style.display = "block";
-  loadSettings();
-}
-
-
 /* ---------- LOGOUT ---------- */
 function logout() {
   localStorage.clear();
@@ -226,3 +218,4 @@ function logout() {
 
 /* ---------- INIT ---------- */
 showDashboard();
+

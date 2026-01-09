@@ -5,11 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>WholeLeads Admin</title>
 
-<script src="https://upload-widget.cloudinary.com/global/all.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="../static/wholeadmin.css">
 
+<!-- TinyMCE -->
 <script src="https://cdn.jsdelivr.net/npm/tinymce@6.7.0/tinymce.min.js"></script>
+<script src="https://upload-widget.cloudinary.com/global/all.js"></script>
 </head>
 
 <body>
@@ -19,88 +20,49 @@
   <a href="#" class="active" onclick="showDashboard(this)">Dashboard</a>
   <a href="#" onclick="showBlogs(this)">Blogs</a>
   <a href="#" onclick="showLeads(this)">Leads</a>
-  <a href="#" onclick="showSettings(this)">Settings</a>
   <a href="#" onclick="logout()">Logout</a>
 </div>
 
 <div class="main-content">
 
-<!-- DASHBOARD -->
-<div id="dashboardSection">
-  <h2>Welcome Admin 👋</h2>
-  <div class="row mt-3">
-    <div class="col-md-4">
-      <div class="card-box">
-        <h5>Total Blogs</h5>
-        <h2 id="blogCount">0</h2>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="card-box">
-        <h5>Total Leads</h5>
-        <h2 id="leadCount">0</h2>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- BLOGS -->
-<div id="blogsSection" style="display:none;">
-  <h2>Blogs</h2>
-
-  <form id="blogForm" class="mb-3">
-    <input type="hidden" id="blogId">
-
-    <input id="title" class="form-control mb-2" placeholder="Title" required>
-
-    <textarea id="content" class="mb-2"></textarea>
-
-    <input id="excerpt" class="form-control mb-2" placeholder="Short Excerpt (required)">
-
-    <input id="featuredImage" class="form-control mb-2"
-      placeholder="Featured Image URL (required)">
-
-    <input id="tags" class="form-control mb-2" placeholder="Tags (comma separated)">
-
-    <select id="publish" class="form-control mb-2">
-      <option value="true">Publish</option>
-      <option value="false">Draft</option>
-    </select>
-
-    <button class="btn btn-primary">Save Blog</button>
-    <button type="button" class="btn btn-secondary" onclick="resetBlog()">Cancel</button>
-  </form>
-
-  <div id="blogList"></div>
-</div>
-
-<!-- LEADS -->
-<div id="leadsSection" style="display:none;">
-  <h2>Leads</h2>
-  <div id="leadList"></div>
-</div>
-
-<!-- SETTINGS -->
-<div id="settingsSection" style="display:none;">
-  <h2>Site Settings</h2>
-
-  <div class="card p-3 mb-4">
-    <h5>Update Website Logo</h5>
-    <input type="file" id="logoInput" class="form-control mb-2">
-    <button class="btn btn-primary" onclick="updateLogo()">Update Logo</button>
+  <div id="dashboardSection">
+    <h2>Welcome Admin 👋</h2>
+    <h5>Total Blogs: <span id="blogCount">0</span></h5>
   </div>
 
-  <div class="card p-3">
-    <h5>Footer Contact Details</h5>
-    <input id="footerEmail" class="form-control mb-2" placeholder="Email">
-    <input id="footerPhone" class="form-control mb-2" placeholder="Phone">
-    <input id="footerAddress" class="form-control mb-2" placeholder="Address">
-    <button class="btn btn-success" onclick="updateFooter()">Save Footer Details</button>
+  <!-- BLOGS -->
+  <div id="blogsSection" style="display:none;">
+    <h2>Blogs</h2>
+
+    <form id="blogForm" class="mb-4">
+      <input type="hidden" id="blogId">
+
+      <input id="title" class="form-control mb-2" placeholder="Title" required>
+
+      <textarea id="content"></textarea>
+
+      <input id="tags" class="form-control my-2" placeholder="Tags (comma separated)">
+
+      <select id="publish" class="form-control mb-2">
+        <option value="true">Publish</option>
+        <option value="false">Draft</option>
+      </select>
+
+      <button class="btn btn-primary">Save Blog</button>
+      <button type="button" class="btn btn-secondary" onclick="resetBlog()">Cancel</button>
+    </form>
+
+    <div id="blogList"></div>
   </div>
-</div>
+
+  <!-- LEADS -->
+  <div id="leadsSection" style="display:none;">
+    <h2>Leads</h2>
+    <div id="leadList"></div>
+  </div>
 
 </div>
 
-<script src="../static/admin.js" defer></script>
+<script src="../static/admin.js"></script>
 </body>
 </html>

@@ -30,4 +30,24 @@ document.addEventListener("DOMContentLoaded", () => {
   if (footerAddress) footerAddress.innerText = data.address;
 
 });
+// Calling js
+document.addEventListener("DOMContentLoaded", () => {
+
+  const callBtn = document.getElementById("callUsBtn");
+  if (!callBtn) return;
+
+  const phone = "+91 7814007003";
+
+  callBtn.addEventListener("click", function(e) {
+
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    if (!isMobile) {
+      e.preventDefault(); // stop dialer
+      alert("Call us at: " + phone);
+    }
+    // mobile → auto dialer open (tel link works)
+  });
+
+});
 

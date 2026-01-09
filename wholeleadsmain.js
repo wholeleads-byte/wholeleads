@@ -1,40 +1,26 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
 
-  // -------- Circle Hover Effect --------
-  const items = document.querySelectorAll(".circle-item");
-  const centerText = document.getElementById("centerText");
+  const saved = localStorage.getItem("siteSettings");
+  if (!saved) return;
 
-  if (centerText) {
-    const defaultText = centerText.innerHTML;
+  const data = JSON.parse(saved);
 
-    items.forEach(item => {
-      item.addEventListener("mouseenter", () => {
-        centerText.innerHTML = item.getAttribute("data-content");
-      });
-
-      item.addEventListener("mouseleave", () => {
-        centerText.innerHTML = defaultText;
-      });
-    });
+  /* LOGO */
+  const logo = document.getElementById("siteLogo");
+  if (logo && data.logo) {
+    logo.src = data.logo;
   }
 
-  // -------- Call Us Button --------
-  const callBtn = document.getElementById("callUs");
-
-  if (callBtn) {
-    callBtn.addEventListener("click", function (e) {
-      e.preventDefault();
-
-      const phoneNumber = "+917814007003";
-      const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
-
-      if (isMobile) {
-        window.location.href = "tel:" + phoneNumber;
-      } else {
-        alert("Call us at: " + phoneNumber);
-      }
-    });
+  /* FOOTER EMAIL */
+  const footerEmail = document.getElementById("footerEmail");
+  if (footerEmail && data.email) {
+    footerEmail.innerText = data.email;
   }
 
-  console.log("WholeLeads JS Loaded Successfully ✅");
+  /* FOOTER PHONE */
+  const footerPhone = document.getElementById("footerPhone");
+  if (footerPhone && data.phone) {
+    footerPhone.innerText = data.phone;
+  }
+
 });

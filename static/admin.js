@@ -141,12 +141,13 @@ async function editBlog(id) {
     headers: { Authorization: `Bearer ${token}` }
   });
 
-  const data = await res.json();
+  const json = await res.json();
+  const blog = json.data;   // 🔥 FIXED
 
   document.getElementById("blogId").value = id;
-  titleInput.value = data.title;
-  tinymce.get("content").setContent(data.content);
-  tagsInput.value = data.tags.join(",");
+  titleInput.value = blog.title;
+  tinymce.get("content").setContent(blog.content);
+  tagsInput.value = blog.tags.join(",");
 
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -203,3 +204,4 @@ function logout() {
 
 /* ---------- INIT ---------- */
 showDashboard();
+

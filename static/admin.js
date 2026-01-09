@@ -12,17 +12,14 @@ tinymce.init({
   selector: "#content",
   plugins: "image link lists media table autoresize",
   menubar: false,
-
-  toolbar:
-    "undo redo | bold italic underline | bullist numlist | image link",
-
+  toolbar: "undo redo | bold italic underline | bullist numlist | image link",
   file_picker_types: "image",
 
   file_picker_callback: function (cb) {
     const widget = cloudinary.createUploadWidget(
       {
         cloudName: "dnfidjaa3",
-        uploadPreset: "unsigned_blog" // 🔥 SAME AS BEFORE
+        uploadPreset: "unsigned_blog"
       },
       (error, result) => {
         if (!error && result && result.event === "success") {
@@ -32,23 +29,21 @@ tinymce.init({
         }
       }
     );
-
     widget.open();
   }
 });
 
-
 /* ================= DOM ================= */
 const dashboardSection = document.getElementById("dashboardSection");
-const blogsSection     = document.getElementById("blogsSection");
-const leadsSection     = document.getElementById("leadsSection");
-const settingsSection  = document.getElementById("settingsSection");
+const blogsSection = document.getElementById("blogsSection");
+const leadsSection = document.getElementById("leadsSection");
+const settingsSection = document.getElementById("settingsSection");
 
-const blogForm  = document.getElementById("blogForm");
-const blogList  = document.getElementById("blogList");
+const blogForm = document.getElementById("blogForm");
+const blogList = document.getElementById("blogList");
 const blogCount = document.getElementById("blogCount");
 
-const leadList  = document.getElementById("leadList");
+const leadList = document.getElementById("leadList");
 const leadCount = document.getElementById("leadCount");
 
 /* ================= HELPERS ================= */
@@ -95,32 +90,102 @@ function showSettings(el) {
   setActive(el);
 }
 
-/* ================= BLOGS ================= */
+/* ================= BLOG CRUD ================= */
+
+// LOAD BLOGS
 async function loadBlogs() {
   const res = await fetch(`${BASE_URL}/blogs`, {
     headers: { Authorization: `Bearer ${token}` }
   });
+
   const data = await res.json();
   const blogs = data.data || [];
+
   blogCount.innerText = blogs.length;
 
   blogList.innerHTML = blogs.map(b => `
     <div class="card mb-2">
       <div class="card-body">
         <h5>${b.title}</h5>
-        <button class="btn btn-danger btn-sm" onclick="deleteBlog('${b._id}')">Delete</button>
+        <button class="btn btn-sm btn-warning me-2"
+          onclick='editBlog(${JSON.stringify(b)})'>Edit</button>
+        <button class="btn btn-sm btn-danger"
+          onclick="deleteBlog('${b._id}')">Delete</button>
       </div>
     </div>
   `).join("");
 }
 
+// SAVE / UPDATE BLOG
+blogForm.addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  const blogId = document.getElementById("blogId").value;
+  const title = document.getElementById("title").value;
+  const content = tinymce.get("content").getContent();
+  const tags = document.getElementById("tags").value.split(",");
+  const publish = document.getElementById("publish").value === "true";
+
+  if (!title || !content) {
+    alert("Title & Content required");
+    return;
+  }
+
+  const payload = { title, content, tags, publish };
+
+  const url = blogId
+    ? `${BASE_URL}/blogs/${blogId}`
+    : `${BASE_URL}/blogs`;
+
+  const method = blogId ? "PUT" : "POST";
+
+  const res = await fetch(url, {
+    method,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify(payload)
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    alert(data.message || "Error saving blog");
+    return;
+  }
+
+  alert(blogId ? "Blog Updated ✅" : "Blog Saved ✅");
+  resetBlog();
+  loadBlogs();
+});
+
+// EDIT BLOG
+function editBlog(blog) {
+  document.getElementById("blogId").value = blog._id;
+  document.getElementById("title").value = blog.title;
+  tinymce.get("content").setContent(blog.content);
+  document.getElementById("tags").value = blog.tags.join(",");
+  document.getElementById("publish").value = blog.publish.toString();
+}
+
+// DELETE BLOG
 async function deleteBlog(id) {
   if (!confirm("Delete blog?")) return;
+
   await fetch(`${BASE_URL}/blogs/${id}`, {
     method: "DELETE",
     headers: { Authorization: `Bearer ${token}` }
   });
+
   loadBlogs();
+}
+
+// RESET FORM
+function resetBlog() {
+  document.getElementById("blogId").value = "";
+  blogForm.reset();
+  tinymce.get("content").setContent("");
 }
 
 /* ================= LEADS ================= */
@@ -128,8 +193,10 @@ async function loadLeads() {
   const res = await fetch(`${BASE_URL}/leads`, {
     headers: { Authorization: `Bearer ${token}` }
   });
+
   const data = await res.json();
   const leads = data.data || [];
+
   leadCount.innerText = leads.length;
 
   leadList.innerHTML = leads.map(l => `
@@ -178,3 +245,4 @@ window.updateFooter = updateFooter;
 
 /* ================= DEFAULT LOAD ================= */
 showDashboard(document.querySelector(".sidebar a.active"));
+

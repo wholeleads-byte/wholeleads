@@ -80,6 +80,7 @@ async function loadBlogs() {
   const res = await fetch(`${BASE_URL}/blogs`, {
     headers: { Authorization: `Bearer ${token}` }
   });
+
   const json = await res.json();
   const blogs = json.data || [];
 
@@ -89,7 +90,12 @@ async function loadBlogs() {
     <div class="card mb-2">
       <div class="card-body">
         <h5>${b.title}</h5>
-        <button class="btn btn-sm btn-danger" onclick="deleteBlog('${b._id}')">Delete</button>
+
+        <button class="btn btn-sm btn-warning me-2"
+          onclick="editBlog('${b._id}')">Edit</button>
+
+        <button class="btn btn-sm btn-danger"
+          onclick="deleteBlog('${b._id}')">Delete</button>
       </div>
     </div>
   `).join("");
@@ -98,6 +104,7 @@ async function loadBlogs() {
 blogForm.addEventListener("submit", async e => {
   e.preventDefault();
 
+  const blogId = document.getElementById("blogId").value;
   const title = titleInput.value.trim();
   const content = tinymce.get("content").getContent();
   const tags = tagsInput.value.split(",").map(t => t.trim());
@@ -109,8 +116,14 @@ blogForm.addEventListener("submit", async e => {
 
   const payload = { title, content, tags };
 
-  await fetch(`${BASE_URL}/blogs`, {
-    method: "POST",
+  const url = blogId
+    ? `${BASE_URL}/blogs/${blogId}`
+    : `${BASE_URL}/blogs`;
+
+  const method = blogId ? "PUT" : "POST";
+
+  await fetch(url, {
+    method,
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`
@@ -118,22 +131,40 @@ blogForm.addEventListener("submit", async e => {
     body: JSON.stringify(payload)
   });
 
-  alert("Blog saved ✅");
+  alert(blogId ? "Blog updated ✅" : "Blog saved ✅");
   resetBlog();
   loadBlogs();
 });
 
+async function editBlog(id) {
+  const res = await fetch(`${BASE_URL}/blogs/${id}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+
+  const data = await res.json();
+
+  document.getElementById("blogId").value = id;
+  titleInput.value = data.title;
+  tinymce.get("content").setContent(data.content);
+  tagsInput.value = data.tags.join(",");
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
 async function deleteBlog(id) {
   if (!confirm("Delete blog?")) return;
+
   await fetch(`${BASE_URL}/blogs/${id}`, {
     method: "DELETE",
     headers: { Authorization: `Bearer ${token}` }
   });
+
   loadBlogs();
 }
 
 function resetBlog() {
   blogForm.reset();
+  document.getElementById("blogId").value = "";
   tinymce.get("content").setContent("");
 }
 
@@ -142,6 +173,7 @@ async function loadLeads() {
   const res = await fetch(`${BASE_URL}/leads`, {
     headers: { Authorization: `Bearer ${token}` }
   });
+
   const json = await res.json();
 
   leadList.innerHTML = (json.data || []).map(l =>
@@ -149,7 +181,7 @@ async function loadLeads() {
   ).join("");
 }
 
-/* ---------- SETTINGS (LOCAL) ---------- */
+/* ---------- SETTINGS ---------- */
 function saveSettings() {
   localStorage.setItem("logo", siteLogo.value);
   localStorage.setItem("email", siteEmail.value);

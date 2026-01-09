@@ -7,6 +7,15 @@ if (!token || token === "undefined") {
   location.href = "adminlogin.html";
 }
 
+/* ================= SLUG ================= */
+function generateSlug(text) {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
 /* ================= TINYMCE ================= */
 tinymce.init({
   selector: "#content",
@@ -131,7 +140,13 @@ blogForm.addEventListener("submit", async function (e) {
     return;
   }
 
-  const payload = { title, content, tags, publish };
+  const payload = {
+    title,
+    content,
+    tags,
+    slug: generateSlug(title),
+    status: publish ? "published" : "draft"
+  };
 
   const url = blogId
     ? `${BASE_URL}/blogs/${blogId}`
@@ -151,7 +166,7 @@ blogForm.addEventListener("submit", async function (e) {
   const data = await res.json();
 
   if (!res.ok) {
-    alert(data.message || "Error saving blog");
+    alert(data.message || "Validation error");
     return;
   }
 
@@ -166,7 +181,8 @@ function editBlog(blog) {
   document.getElementById("title").value = blog.title;
   tinymce.get("content").setContent(blog.content);
   document.getElementById("tags").value = blog.tags.join(",");
-  document.getElementById("publish").value = blog.publish.toString();
+  document.getElementById("publish").value =
+    blog.status === "published" ? "true" : "false";
 }
 
 // DELETE BLOG
@@ -181,7 +197,7 @@ async function deleteBlog(id) {
   loadBlogs();
 }
 
-// RESET FORM
+// RESET
 function resetBlog() {
   document.getElementById("blogId").value = "";
   blogForm.reset();
@@ -245,4 +261,5 @@ window.updateFooter = updateFooter;
 
 /* ================= DEFAULT LOAD ================= */
 showDashboard(document.querySelector(".sidebar a.active"));
+
 

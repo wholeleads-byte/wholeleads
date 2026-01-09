@@ -76,15 +76,20 @@
   <h2>Site Settings</h2>
 
   <div class="card p-3 mb-3">
-    <h5>Logo URL</h5>
-    <input id="siteLogo" class="form-control mb-2">
+    <label>Logo URL</label>
+    <input id="siteLogo" class="form-control mb-2" placeholder="Enter logo image URL">
   </div>
 
   <div class="card p-3 mb-3">
-    <h5>Contact Details</h5>
-    <input id="siteEmail" class="form-control mb-2">
-    <input id="sitePhone" class="form-control mb-2">
-    <button class="btn btn-success" onclick="saveSettings()">Save Settings</button>
+    <label>Email</label>
+    <input id="siteEmail" class="form-control mb-2" placeholder="Enter contact email">
+
+    <label>Phone Number</label>
+    <input id="sitePhone" class="form-control mb-2" placeholder="Enter contact number">
+
+    <button class="btn btn-success w-100" onclick="saveSettings()">
+      Save Settings
+    </button>
   </div>
 </div>
 
@@ -93,4 +98,3 @@
 <script src="../static/admin.js"></script>
 </body>
 </html>
-

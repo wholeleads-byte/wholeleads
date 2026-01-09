@@ -20,9 +20,10 @@ const leadList = document.getElementById("leadList");
 /* ---------- TinyMCE ---------- */
 tinymce.init({
   selector: "#content",
+  apiKey: "YOUR_API_KEY_HERE",
   height: 350,
   plugins: "image link lists",
-  toolbar: "undo redo | bold italic | bullist numlist | image link",
+  toolbar: "undo redo | bold italic underline | bullist numlist | image link",
   menubar: false,
 
   file_picker_callback: function(cb) {
@@ -69,6 +70,7 @@ function showLeads() {
 function showSettings() {
   hideAll();
   settingsSection.style.display = "block";
+  loadSettings();
 }
 
 /* ---------- BLOGS ---------- */
@@ -105,31 +107,23 @@ blogForm.addEventListener("submit", async e => {
 
   const payload = { title, content, tags };
 
-  try {
-    const res = await fetch(`${BASE_URL}/blogs`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify(payload)
-    });
+  const res = await fetch(`${BASE_URL}/blogs`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify(payload)
+  });
 
-    if (!res.ok) {
-      const errText = await res.text();
-      console.error(errText);
-      alert("Blog save failed");
-      return;
-    }
-
-    alert("Blog saved ✅");
-    resetBlog();
-    loadBlogs();
-
-  } catch (err) {
-    console.error(err);
-    alert("Network error");
+  if (!res.ok) {
+    alert("Blog save failed");
+    return;
   }
+
+  alert("Blog saved ✅");
+  resetBlog();
+  loadBlogs();
 });
 
 async function deleteBlog(id) {
@@ -159,16 +153,37 @@ async function loadLeads() {
 }
 
 /* ---------- SETTINGS ---------- */
-function saveSettings() {
+async function saveSettings() {
   const logo = document.getElementById("siteLogo").value;
   const email = document.getElementById("siteEmail").value;
   const phone = document.getElementById("sitePhone").value;
 
-  localStorage.setItem("siteLogo", logo);
-  localStorage.setItem("siteEmail", email);
-  localStorage.setItem("sitePhone", phone);
+  const payload = { logo, email, phone };
 
-  alert("Settings saved ✅");
+  const res = await fetch(`${BASE_URL}/settings`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!res.ok) {
+    alert("Settings save failed ❌");
+    return;
+  }
+
+  alert("Settings updated on website ✅");
+}
+
+async function loadSettings() {
+  const res = await fetch(`${BASE_URL}/settings`);
+  const data = await res.json();
+
+  document.getElementById("siteLogo").value = data.logo || "";
+  document.getElementById("siteEmail").value = data.email || "";
+  document.getElementById("sitePhone").value = data.phone || "";
 }
 
 /* ---------- LOGOUT ---------- */
@@ -179,5 +194,3 @@ function logout() {
 
 /* ---------- INIT ---------- */
 showDashboard();
-
-

@@ -3,6 +3,8 @@ const token = localStorage.getItem("token");
 
 if (!token) location.href = "adminlogin.html";
 
+let allBlogs = [];
+
 /* ---------- TINYMCE ---------- */
 tinymce.init({
   selector: "#content",
@@ -77,30 +79,92 @@ function showSettings() {
 
 /* ---------- BLOGS ---------- */
 async function loadBlogs() {
+
   const res = await fetch(`${BASE_URL}/blogs`, {
     headers: { Authorization: `Bearer ${token}` }
   });
 
   const json = await res.json();
-  const blogs = json.data || [];
+  allBlogs = json.data || [];
 
-  blogCount.innerText = blogs.length;
+  blogCount.innerText = allBlogs.length;
+
+  fillTagDropdown(allBlogs);
+  renderBlogs(allBlogs);
+}
+
+/* Render blogs */
+function renderBlogs(blogs) {
 
   blogList.innerHTML = blogs.map(b => `
     <div class="card mb-2">
       <div class="card-body">
         <h5>${b.title}</h5>
 
-        <button class="btn btn-sm btn-warning me-2"
-          onclick="editBlog('${b._id}')">Edit</button>
+        <small>
+          ${b.tags?.map(t => 
+            `<span class="badge bg-secondary me-1">${t}</span>`
+          ).join("") || ""}
+        </small>
 
-        <button class="btn btn-sm btn-danger"
-          onclick="deleteBlog('${b._id}')">Delete</button>
+        <div class="mt-2">
+          <button class="btn btn-sm btn-warning me-2"
+            onclick="editBlog('${b._id}')">Edit</button>
+
+          <button class="btn btn-sm btn-danger"
+            onclick="deleteBlog('${b._id}')">Delete</button>
+        </div>
       </div>
     </div>
   `).join("");
 }
 
+/* Fill tag dropdown */
+function fillTagDropdown(blogs) {
+
+  const tags = new Set();
+
+  blogs.forEach(b => {
+    b.tags?.forEach(t => tags.add(t));
+  });
+
+  const filter = document.getElementById("tagFilter");
+  filter.innerHTML = `<option value="">Filter by tag</option>`;
+
+  [...tags].forEach(tag => {
+    filter.innerHTML += `<option value="${tag}">${tag}</option>`;
+  });
+}
+
+/* Search & filter */
+document.getElementById("searchInput")
+  .addEventListener("input", applyFilters);
+
+document.getElementById("tagFilter")
+  .addEventListener("change", applyFilters);
+
+function applyFilters() {
+
+  const search = document.getElementById("searchInput")
+                    .value.toLowerCase();
+
+  const tag = document.getElementById("tagFilter").value;
+
+  const filtered = allBlogs.filter(b => {
+
+    const titleMatch =
+      b.title.toLowerCase().includes(search);
+
+    const tagMatch =
+      !tag || b.tags?.includes(tag);
+
+    return titleMatch && tagMatch;
+  });
+
+  renderBlogs(filtered);
+}
+
+/* Submit */
 blogForm.addEventListener("submit", async e => {
   e.preventDefault();
 
@@ -136,7 +200,9 @@ blogForm.addEventListener("submit", async e => {
   loadBlogs();
 });
 
+/* Edit */
 async function editBlog(id) {
+
   const res = await fetch(`${BASE_URL}/blogs/${id}`, {
     headers: { Authorization: `Bearer ${token}` }
   });
@@ -152,6 +218,7 @@ async function editBlog(id) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+/* Delete */
 async function deleteBlog(id) {
   if (!confirm("Delete blog?")) return;
 
@@ -171,6 +238,7 @@ function resetBlog() {
 
 /* ---------- LEADS ---------- */
 async function loadLeads() {
+
   const res = await fetch(`${BASE_URL}/leads`, {
     headers: { Authorization: `Bearer ${token}` }
   });
@@ -178,7 +246,9 @@ async function loadLeads() {
   const json = await res.json();
 
   leadList.innerHTML = (json.data || []).map(l =>
-    `<div class="card mb-2"><div class="card-body">${l.email}</div></div>`
+    `<div class="card mb-2">
+      <div class="card-body">${l.email}</div>
+    </div>`
   ).join("");
 }
 
@@ -210,14 +280,6 @@ function loadSettings() {
   document.getElementById("siteAddress").value = data.address || "";
 }
 
-/* IMPORTANT */
-function showSettings() {
-  hideAll();
-  settingsSection.style.display = "block";
-  loadSettings();
-}
-
-
 /* ---------- LOGOUT ---------- */
 function logout() {
   localStorage.clear();
@@ -226,5 +288,3 @@ function logout() {
 
 /* ---------- INIT ---------- */
 showDashboard();
-
-

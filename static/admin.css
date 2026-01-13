@@ -86,3 +86,15 @@ p a:hover {
         padding: 25px;
     }
 }
+.sidebar {
+  width: 240px;
+  background: #0f172a;
+  padding: 20px 15px;
+}
+
+.sidebar-logo {
+  width: 140px;     /* perfect width */
+  height: auto;     /* keep aspect ratio */
+  display: block;
+  margin: 0 auto 30px auto; /* center + spacing */
+}

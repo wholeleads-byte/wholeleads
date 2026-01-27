@@ -1,4 +1,4 @@
-document.getElementById("contactForm").addEventListener("submit", async function(e) {
+document.getElementById("contactForm").addEventListener("submit", async function(e){
   e.preventDefault();
 
   const data = {
@@ -10,24 +10,31 @@ document.getElementById("contactForm").addEventListener("submit", async function
   };
 
   try {
-    const response = await fetch("https://wholeleads.com/contact-us", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(data)
-    });
+    const response = await fetch(
+      "https://leads-backend-2piw.onrender.com/api/contact-us",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      }
+    );
 
     const result = await response.json();
 
-    document.getElementById("response").innerHTML =
-      "<span style='color:green'>Message sent successfully!</span>";
-
-    document.getElementById("contactForm").reset();
+    if(result.success){
+      document.getElementById("response").innerHTML =
+        "<span style='color:green'>Form submitted successfully!</span>";
+      document.getElementById("contactForm").reset();
+    } else {
+      document.getElementById("response").innerHTML =
+        "<span style='color:red'>Something went wrong!</span>";
+    }
 
   } catch (error) {
+    console.error(error);
     document.getElementById("response").innerHTML =
-      "<span style='color:red'>Something went wrong!</span>";
+      "<span style='color:red'>Server Error!</span>";
   }
 });
-

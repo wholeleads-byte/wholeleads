@@ -219,32 +219,31 @@ function logout() {
 /* ---------- INIT ---------- */
 showDashboard();
 
-async function loadLeads() {
-  try {
+document.addEventListener("DOMContentLoaded", () => {
+  loadLeads();
+});
 
-    const response = await fetch("https://wholeleads.com/contact-us");
-    const data = await response.json();
+function loadLeads(){
+  fetch("https://leads-backend-2piw.onrender.com/api/contact-us")
+    .then(res => res.json())
+    .then(data => {
 
-    let rows = "";
+      const leadList = document.getElementById("leadList");
+      leadList.innerHTML = "";
 
-    data.forEach(lead => {
-      rows += `
-        <tr>
-          <td>${lead.name}</td>
-          <td>${lead.email}</td>
-          <td>${lead.contactNumber}</td>
-          <td>${lead.subject}</td>
-          <td>${lead.message}</td>
-        </tr>
-      `;
-    });
+      data.forEach((lead, index) => {
+        leadList.innerHTML += `
+          <div class="lead-card">
+            <h4>${lead.name}</h4>
+            <p>Email: ${lead.email}</p>
+            <p>Phone: ${lead.contactNumber}</p>
+            <p>Subject: ${lead.subject}</p>
+            <p>Message: ${lead.message}</p>
+            <hr/>
+          </div>
+        `;
+      });
 
-    document.getElementById("leadList").innerHTML = rows;
-
-  } catch (error) {
-    console.log("Error loading leads", error);
-  }
+    })
+    .catch(err => console.error(err));
 }
-
-loadLeads();
-

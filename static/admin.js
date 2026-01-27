@@ -219,3 +219,32 @@ function logout() {
 /* ---------- INIT ---------- */
 showDashboard();
 
+async function loadLeads() {
+  try {
+
+    const response = await fetch("https://wholeleads.com/contact-us");
+    const data = await response.json();
+
+    let rows = "";
+
+    data.forEach(lead => {
+      rows += `
+        <tr>
+          <td>${lead.name}</td>
+          <td>${lead.email}</td>
+          <td>${lead.contactNumber}</td>
+          <td>${lead.subject}</td>
+          <td>${lead.message}</td>
+        </tr>
+      `;
+    });
+
+    document.getElementById("leadList").innerHTML = rows;
+
+  } catch (error) {
+    console.log("Error loading leads", error);
+  }
+}
+
+loadLeads();
+

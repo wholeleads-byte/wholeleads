@@ -223,27 +223,29 @@ document.addEventListener("DOMContentLoaded", () => {
   loadLeads();
 });
 
-function loadLeads(){
-  fetch("https://leads-backend-2piw.onrender.com/api/contact-us")
-    .then(res => res.json())
-    .then(data => {
+async function loadLeads() {
+  try {
+    const res = await fetch(
+      "https://leads-backend-2piw.onrender.com/api/contact-us"
+    );
 
-      const leadList = document.getElementById("leadList");
-      leadList.innerHTML = "";
+    const leads = await res.json();
 
-      data.forEach((lead, index) => {
-        leadList.innerHTML += `
-          <div class="lead-card">
-            <h4>${lead.name}</h4>
-            <p>Email: ${lead.email}</p>
-            <p>Phone: ${lead.contactNumber}</p>
-            <p>Subject: ${lead.subject}</p>
-            <p>Message: ${lead.message}</p>
-            <hr/>
-          </div>
-        `;
-      });
+    const leadList = document.getElementById("leadList");
+    leadList.innerHTML = "";
 
-    })
-    .catch(err => console.error(err));
+    leads.forEach((lead) => {
+      leadList.innerHTML += `
+        <tr>
+          <td>${lead.name}</td>
+          <td>${lead.email}</td>
+          <td>${lead.contactNumber}</td>
+          <td>${lead.subject}</td>
+          <td>${lead.message}</td>
+        </tr>
+      `;
+    });
+  } catch (error) {
+    console.error("Error loading leads:", error);
+  }
 }
